@@ -26,10 +26,9 @@ FRigUnit_ClaviceIK_Execute()
 		else
 		{
 			// Objective properties
-			FTransform EndEE = Offset * Objective;
-			EndEE.SetScale3D(Hierarchy->GetInitialGlobalTransform(Chain.Last()).GetScale3D());
-			const FVector EEForwardTarget = Objective.GetUnitAxis(EAxis::X);
-			const FVector EELocation = EndEE.GetLocation();
+			const FTransform EndEETarget = GET_IK_OBJECTIVE_TRANSFORM();
+			const FVector EEForwardTarget = GET_IK_OBJECTIVE_FORWARD();
+			const FVector EELocation = EndEETarget.GetLocation();
 
 			// Compute initial leg properties
 			const FTransform InitialClavicle = Hierarchy->GetGlobalTransform(Chain[0]);
@@ -131,7 +130,7 @@ FRigUnit_ClaviceIK_Execute()
 			// Set foot transform
 			FTransform EE;
 			EE.SetScale3D(Hierarchy->GetInitialGlobalTransform(Chain[3]).GetScale3D());
-			EE.SetRotation(EndEE.GetRotation());
+			EE.SetRotation(EndEETarget.GetRotation());
 			EE.SetLocation(ObjectiveLocation);
 			Hierarchy->SetGlobalTransform(Chain[3], EE, false, PropagateToChildren != EPropagation::Off);
 		}

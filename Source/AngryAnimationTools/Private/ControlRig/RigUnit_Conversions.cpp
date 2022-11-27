@@ -5,6 +5,33 @@
 #include "ControlRig.h"
 #include "Units/RigUnitContext.h"
 
+FRigUnit_SetTransformWithOffset_Execute()
+{
+	DECLARE_SCOPE_HIERARCHICAL_COUNTER_RIGUNIT();
+	URigHierarchy* Hierarchy = ExecuteContext.Hierarchy;
+
+	if (Context.State == EControlRigState::Init)
+	{
+		Cache.Reset();
+		return;
+	}
+
+	if (Context.State == EControlRigState::Update)
+	{
+		if (!Cache.UpdateCache(Key, Hierarchy))
+		{
+			UE_CONTROLRIG_RIGUNIT_REPORT_WARNING(TEXT("Key '%s' is not valid."), *Key.ToString());
+		}
+		else
+		{
+			const FTransform Output = FTransform(OffsetRotation, OffsetTranslation) * Transform;
+			Hierarchy->SetGlobalTransform(Cache, Output, bPropagateToChildren);
+		}
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 FRigUnit_CloneTransforms_Execute()
 {
 	DECLARE_SCOPE_HIERARCHICAL_COUNTER_RIGUNIT();

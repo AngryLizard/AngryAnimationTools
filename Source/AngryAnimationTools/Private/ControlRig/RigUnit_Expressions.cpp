@@ -30,8 +30,8 @@ FRigUnit_EyeLookAt_Execute()
 
 			// Get current transform basis
 			FTransform Transform = FTransform(Offset) * Hierarchy->GetGlobalTransform(Cache);
-			const FVector CurrentForward = Transform.GetUnitAxis(EAxis::X);
-			const FVector CurrentRight = Transform.GetUnitAxis(EAxis::Y);
+			const FVector CurrentForward = Transform.GetUnitAxis(EAxis::Y);
+			const FVector CurrentRight = -Transform.GetUnitAxis(EAxis::X);
 			const FVector CurrentUp = Transform.GetUnitAxis(EAxis::Z);
 
 			if (DebugSettings.bEnabled)
@@ -49,8 +49,8 @@ FRigUnit_EyeLookAt_Execute()
 			const FVector LocalDirection = CenterRotation.Inverse() * TargetDirection;
 
 			const FQuat LocalOffset = Offset.Quaternion();
-			const FVector LocalForward = LocalOffset.GetAxisX();
-			const FVector LocalRight = LocalOffset.GetAxisY();
+			const FVector LocalForward = LocalOffset.GetAxisY(); 
+			const FVector LocalRight = -LocalOffset.GetAxisX();
 			const FVector LocalUp = LocalOffset.GetAxisZ();
 
 			FVector Intensities;
@@ -79,7 +79,7 @@ FRigUnit_EyeLookAt_Execute()
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-FRigUnit_EyeLidDisplacement_Execute()
+FRigUnit_EyelidDisplacement_Execute()
 {
 	DECLARE_SCOPE_HIERARCHICAL_COUNTER_RIGUNIT();
 	URigHierarchy* Hierarchy = ExecuteContext.Hierarchy;
@@ -100,8 +100,8 @@ FRigUnit_EyeLidDisplacement_Execute()
 		{
 			// Get current transform basis
 			FTransform Transform = FTransform(Offset) * Hierarchy->GetGlobalTransform(Cache);
-			const FVector CurrentForward = Transform.GetUnitAxis(EAxis::X);
-			const FVector CurrentRight = Transform.GetUnitAxis(EAxis::Y);
+			const FVector CurrentForward = Transform.GetUnitAxis(EAxis::Y);
+			const FVector CurrentRight = -Transform.GetUnitAxis(EAxis::X);
 			const FVector CurrentUp = Transform.GetUnitAxis(EAxis::Z);
 
 			if (DebugSettings.bEnabled)

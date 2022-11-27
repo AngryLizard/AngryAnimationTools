@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "Units/RigUnit.h"
+#include "RigUnit_IK.h"
 #include "ControlRig/Utility.h"
 
 #include "RigUnit_HingeIK.generated.h"
@@ -11,7 +11,7 @@
  *
  */
 USTRUCT(meta = (DisplayName = "Hinge IK", Category = "IK", Keywords = "Angry,IK", PrototypeName = "HingeIK", NodeColor = "1.0 0.44 0.0"))
-struct ANGRYANIMATIONTOOLS_API FRigUnit_HingeIK : public FRigUnitMutable
+struct ANGRYANIMATIONTOOLS_API FRigUnit_HingeIK : public FRigUnit_IK
 {
 	GENERATED_BODY()
 
@@ -23,12 +23,6 @@ struct ANGRYANIMATIONTOOLS_API FRigUnit_HingeIK : public FRigUnitMutable
 public:
 	// Given two triangle sides a,b,s, return length and distance along s of the triangle altitude/apex
 	static bool ComputeTriangle(float a, float b, float s, float& h, float& x);
-
-	/**
-	 * The chain to adapt (Has to be continuous chain)
-	 */
-	UPROPERTY(meta = (Input, ExpandByDefault))
-		FRigElementKeyCollection Chain;
 
 	/**
 	 * Desired length of this chain
@@ -59,29 +53,4 @@ public:
 	 */
 	UPROPERTY(meta = (Input))
 		EBendScaleType ScaleType = EBendScaleType::None;
-
-	/**
-	 * Objective settings
-	 */
-	UPROPERTY(meta = (Input, ExpandByDefault))
-		FTransform Objective;
-
-	/**
-	 * Local objective offset
-	 */
-	UPROPERTY(meta = (Input))
-		FTransform Offset;
-
-	/**
-	 * If set to true all of the global transforms of the children
-	 * of this bone will be recalculated based on their local transforms.
-	 */
-	UPROPERTY(meta = (Input, Constant))
-		EPropagation PropagateToChildren = EPropagation::All;
-
-	/**
-	 * Debug settings
-	 */
-	UPROPERTY(meta = (Input, DetailsOnly))
-		FDebugSettings DebugSettings;
 };

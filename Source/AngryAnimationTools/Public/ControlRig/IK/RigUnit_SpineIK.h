@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "Units/RigUnit.h"
+#include "RigUnit_IK.h"
 #include "ControlRig/Utility.h"
 
 #include "RigUnit_SpineIK.generated.h"
@@ -40,7 +40,7 @@ struct ANGRYANIMATIONTOOLS_API FSpineEffectorSettings
  *
  */
 USTRUCT(meta = (DisplayName = "Spine IK", Category = "IK", Keywords = "Angry,IK", PrototypeName = "SpineIK", NodeColor = "1.0 0.44 0.0"))
-struct ANGRYANIMATIONTOOLS_API FRigUnit_SpineIK : public FRigUnitMutable
+struct ANGRYANIMATIONTOOLS_API FRigUnit_SpineIK : public FRigUnit_IK
 {
 	GENERATED_BODY()
 
@@ -51,22 +51,16 @@ struct ANGRYANIMATIONTOOLS_API FRigUnit_SpineIK : public FRigUnitMutable
 
 public:
 
-	/**
-	 * The chain to adapt (Has to be continuous chain)
-	 */
-	UPROPERTY(meta = (Input, ExpandByDefault))
-		FRigElementKeyCollection Chain;
-
 	/*
 	 * Constraint properties of the beginning of the chain
 	 */
-	UPROPERTY(meta = (Input))
+	UPROPERTY(meta = (Input, DetailsOnly))
 		FSpineEffectorSettings AnchorSettings;
 
 	/*
 	 * Constraint properties of the end of the chain
 	 */
-	UPROPERTY(meta = (Input))
+	UPROPERTY(meta = (Input, DetailsOnly))
 		FSpineEffectorSettings ObjectiveSettings;
 
 	/**
@@ -75,28 +69,4 @@ public:
 	UPROPERTY(meta = (Input, DetailsOnly))
 		int32 Iterations = 10;
 
-	/**
-	 * Objective settings
-	 */
-	UPROPERTY(meta = (Input, ExpandByDefault))
-		FTransform Objective;
-
-	/**
-	 * Local objective offset
-	 */
-	UPROPERTY(meta = (Input))
-		FTransform Offset;
-
-	/**
-	 * If set to true all of the global transforms of the children
-	 * of this bone will be recalculated based on their local transforms.
-	 */
-	UPROPERTY(meta = (Input, Constant))
-		EPropagation PropagateToChildren = EPropagation::All;
-
-	/**
-	 * Debug settings
-	 */
-	UPROPERTY(meta = (Input, DetailsOnly))
-		FDebugSettings DebugSettings;
 };

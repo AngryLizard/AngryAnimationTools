@@ -52,8 +52,7 @@ FRigUnit_ConeFABRIK_Execute()
 		else
 		{
 			const FTransform StartEE = Context.Hierarchy->GetGlobalTransform(Chain.First());
-			FTransform EndEE = Offset * Objective;
-			EndEE.SetScale3D(Hierarchy->GetInitialGlobalTransform(Chain.Last()).GetScale3D());
+			const FTransform EndEETarget = GET_IK_OBJECTIVE_TRANSFORM();
 
 			// Populate transform lists
 			TArray<FTransform> Transforms, Rest;
@@ -69,7 +68,7 @@ FRigUnit_ConeFABRIK_Execute()
 			const float MaxRadians = FMath::DegreesToRadians(MaxAngle);
 			for (int32 Iteration = 0; Iteration < Iterations; Iteration++)
 			{
-				Transforms[0] = Fabrik(Transforms, Rest, 0, StartEE, EndEE, MaxRadians);
+				Transforms[0] = Fabrik(Transforms, Rest, 0, StartEE, EndEETarget, MaxRadians);
 			}
 
 			// Set bones to transforms

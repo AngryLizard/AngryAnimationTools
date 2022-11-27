@@ -78,12 +78,12 @@ public:
 /**
  *
  */
-USTRUCT(meta = (DisplayName = "Eye Look At", Category = "Expressions", Keywords = "Angry,Expression", PrototypeName = "EyeLookAt", NodeColor = "1.0 0.44 0.0"))
-struct ANGRYANIMATIONTOOLS_API FRigUnit_EyeLidDisplacement : public FRigUnitMutable
+USTRUCT(meta = (DisplayName = "Eyelid Displacement", Category = "Expressions", Keywords = "Angry,Expression", PrototypeName = "EyelidDisplacement", NodeColor = "1.0 0.44 0.0"))
+struct ANGRYANIMATIONTOOLS_API FRigUnit_EyelidDisplacement : public FRigUnitMutable
 {
 	GENERATED_BODY()
 
-	FRigUnit_EyeLidDisplacement() {}
+		FRigUnit_EyelidDisplacement() {}
 
 	RIGVM_METHOD()
 		virtual void Execute(const FRigUnitContext& Context) override;

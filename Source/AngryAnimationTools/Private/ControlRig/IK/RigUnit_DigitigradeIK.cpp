@@ -26,11 +26,9 @@ FRigUnit_DigitigradeIK_Execute()
 		else
 		{
 			// Objective properties
-			FTransform EndEE = Offset * Objective;
-			EndEE.SetScale3D(Hierarchy->GetInitialGlobalTransform(Chain.Last()).GetScale3D());
-			const FVector EEForwardTarget = Objective.GetUnitAxis(EAxis::X);
-			const FVector EEUpTarget = Objective.GetUnitAxis(EAxis::Z);
-			const FVector EELocation = EndEE.GetLocation();
+			const FTransform EndEETarget = GET_IK_OBJECTIVE_TRANSFORM();
+			const FVector EEForwardTarget = GET_IK_OBJECTIVE_FORWARD();
+			const FVector EEUpTarget = GET_IK_OBJECTIVE_UP();
 
 			// Compute initial leg properties
 			const FTransform InitialUpperLeg = Hierarchy->GetGlobalTransform(Chain[0]);
@@ -41,7 +39,7 @@ FRigUnit_DigitigradeIK_Execute()
 			// Compute objective deltas
 			const FTransform UpperLeg = Hierarchy->GetGlobalTransform(Chain[0]);
 			const FVector PelvisLocation = UpperLeg.GetLocation();
-			const FVector ObjectiveDelta = EELocation - PelvisLocation;
+			const FVector ObjectiveDelta = EndEETarget.GetLocation() - PelvisLocation;
 			const float ObjectiveNorm = ObjectiveDelta.Size();
 			const FVector ObjectiveNormal = ObjectiveDelta / ObjectiveNorm;
 
@@ -79,12 +77,13 @@ FRigUnit_DigitigradeIK_Execute()
 			}
 
 			// Compute directions
-			const FVector FootDirection = EEForwardTarget * (EEUpTarget | ObjectiveNormal) - EEUpTarget * (EEForwardTarget | ObjectiveNormal);
+			const FVector FootDirection = -EEForwardTarget * (EEUpTarget | ObjectiveNormal) + EEUpTarget * (EEForwardTarget | ObjectiveNormal);
 			const FVector LowerDirection = FVector::VectorPlaneProject(FootDirection * (Lengths.X + Lengths.Y) + LegDirection * Lengths.Z * AnkleKneeDirectionWeight, ObjectiveNormal).GetSafeNormal();
 
 			if (DebugSettings.bEnabled)
 			{
 				Context.DrawInterface->DrawLine(FTransform::Identity, ObjectiveLocation, ObjectiveLocation + FootDirection * 50.0f, FLinearColor::Black, DebugSettings.Scale * 0.5f);
+				Context.DrawInterface->DrawLine(FTransform::Identity, ObjectiveLocation, ObjectiveLocation + EEForwardTarget * 50.0f, FLinearColor::Red, DebugSettings.Scale * 2.5f);
 			}
 
 			// Interpolate ankle height
@@ -134,7 +133,7 @@ FRigUnit_DigitigradeIK_Execute()
 			// Set foot transform
 			FTransform Foot;
 			Foot.SetScale3D(Hierarchy->GetInitialGlobalTransform(Chain[3]).GetScale3D());
-			Foot.SetRotation(EndEE.GetRotation());
+			Foot.SetRotation(EndEETarget.GetRotation());
 			Foot.SetLocation(ObjectiveLocation);
 			Hierarchy->SetGlobalTransform(Chain[3], Foot, false, PropagateToChildren != EPropagation::Off);
 

@@ -10,6 +10,56 @@
 #define SQRT_THREE 1.73205f
 
 /**
+ *
+ */
+USTRUCT(meta = (DisplayName = "Set Transform With Offset", Category = "Conversions", Keywords = "TGOR,Utility", PrototypeName = "SetTransformWithOffset", NodeColor = "1.0 0.44 0.0"))
+struct ANGRYANIMATIONTOOLS_API FRigUnit_SetTransformWithOffset : public FRigUnitMutable
+{
+	GENERATED_BODY()
+
+		FRigUnit_SetTransformWithOffset() {}
+
+	RIGVM_METHOD()
+		virtual void Execute(const FRigUnitContext& Context) override;
+
+public:
+
+	/**
+	 * Key
+	 */
+	UPROPERTY(meta = (Input, ExpandByDefault))
+		FRigElementKey Key = FRigElementKey(FName(), ERigElementType::Control);
+
+	/**
+	 * Local objective offset rotation
+	 */
+	UPROPERTY(meta = (Input, Constant, DetailsOnly))
+		FRotator OffsetRotation;
+
+	/**
+	 * Local objective offset translation
+	 */
+	UPROPERTY(meta = (Input, Constant, DetailsOnly))
+		FVector OffsetTranslation;
+
+	/**
+	 * Output transform
+	 */
+	UPROPERTY(meta = (Input))
+		FTransform Transform = FTransform::Identity;
+
+	/**
+	 * Whether to propagate applied transform
+	 */
+	UPROPERTY(meta = (Input, ExpandByDefault))
+		bool bPropagateToChildren = true;
+
+	// Cache
+	UPROPERTY(Transient)
+		FCachedRigElement Cache;
+};
+
+/**
  * 
  */
 USTRUCT(meta = (DisplayName = "Clone Transforms", Category = "Conversions", Keywords = "Angry,Utility", PrototypeName = "CloneTransforms", NodeColor = "1.0 0.44 0.0"))

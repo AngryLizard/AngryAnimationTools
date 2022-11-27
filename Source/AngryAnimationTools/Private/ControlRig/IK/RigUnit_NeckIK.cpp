@@ -26,13 +26,11 @@ FRigUnit_NeckIK_Execute()
 		else
 		{
 			// Objective properties
-			FTransform EndEE = Offset * Objective;
-			EndEE.SetScale3D(Hierarchy->GetInitialGlobalTransform(Chain.Last()).GetScale3D());
-			const FVector EELocation = EndEE.GetLocation();
-			const FVector EEUpTarget = Objective.GetUnitAxis(EAxis::Z);
+			const FTransform EndEETarget = GET_IK_OBJECTIVE_TRANSFORM();
+			const FVector EEUpTarget = GET_IK_OBJECTIVE_UP();
 
 			const FTransform Last = Hierarchy->GetGlobalTransform(Chain.Last());
-			const FVector TargetDirection = (EELocation - Last.GetLocation()).GetSafeNormal();
+			const FVector TargetDirection = (EndEETarget.GetLocation() - Last.GetLocation()).GetSafeNormal();
 			const FVector CurrentForward = Last.TransformVectorNoScale(EndeffectorForward);
 			const FVector CurrentUp = Last.TransformVectorNoScale(EndeffectorUp);
 

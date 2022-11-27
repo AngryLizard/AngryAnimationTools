@@ -1,13 +1,13 @@
 // The Gateway of Realities: Planes of Existence.
 
-#include "ControlRig/IK/RigUnit_SplineIK.h"
+#include "ControlRig/IK/RigUnit_BSplineIK.h"
 #include "ControlRig/RigUnit_BendTowards.h"
 #include "ControlRig/RigUnit_Conversions.h"
 
 #include "ControlRig.h"
 #include "Units/RigUnitContext.h"
 
-FRigUnit_SplineIK_Execute()
+FRigUnit_BSplineIK_Execute()
 {
 	DECLARE_SCOPE_HIERARCHICAL_COUNTER_RIGUNIT();
 	URigHierarchy* Hierarchy = ExecuteContext.Hierarchy;
@@ -47,19 +47,17 @@ FRigUnit_SplineIK_Execute()
 			}
 			else
 			{
-				FTransform EndEE = Offset * Objective;
-				EndEE.SetScale3D(Hierarchy->GetInitialGlobalTransform(Chain.Last()).GetScale3D());
-
+				const FTransform EndEETarget = GET_IK_OBJECTIVE_TRANSFORM();
 				const float InvTotalDistance = PositionAlongSpline / TotalDistance;
 
 				// Define B-Spline
 				const FTransform Origin = Hierarchy->GetGlobalTransform(Chain.First());
-				const float TargetDistance = (Origin.GetLocation() - EndEE.GetLocation()).Size();
+				const float TargetDistance = (Origin.GetLocation() - EndEETarget.GetLocation()).Size();
 
 				const FVector StartAnchor = Origin.GetLocation() + TangentStart * (TargetDistance * Bend);
-				const FVector EndAnchor = EndEE.GetLocation() + TangentEnd * (TargetDistance * Bend);
+				const FVector EndAnchor = EndEETarget.GetLocation() + TangentEnd * (TargetDistance * Bend);
 				auto LerpSpline = [&](float Alpha) -> FVector {
-					return FMath::Lerp(FMath::Lerp(Origin.GetLocation(), StartAnchor, Alpha), FMath::Lerp(EndAnchor, EndEE.GetLocation(), Alpha), FMath::SmoothStep(0.f, 1.f, Alpha));
+					return FMath::Lerp(FMath::Lerp(Origin.GetLocation(), StartAnchor, Alpha), FMath::Lerp(EndAnchor, EndEETarget.GetLocation(), Alpha), FMath::SmoothStep(0.f, 1.f, Alpha));
 				};
 
 				// Build spline
@@ -82,7 +80,7 @@ FRigUnit_SplineIK_Execute()
 
 				// Set last member of chain
 				FTransform EE = Hierarchy->GetGlobalTransform(Chain.Last());
-				EE.SetRotation(FQuat::Slerp(EndEE.GetRotation(), EE.GetRotation(), RotateWithTangent));
+				EE.SetRotation(FQuat::Slerp(EndEETarget.GetRotation(), EE.GetRotation(), RotateWithTangent));
 				EE.SetScale3D(Objective.GetScale3D());
 				EE.SetLocation(EE.GetLocation());
 				Hierarchy->SetGlobalTransform(Chain.Last(), EE, false, PropagateToChildren != EPropagation::Off);

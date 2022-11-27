@@ -51,8 +51,7 @@ FRigUnit_HingeIK_Execute()
 		else
 		{
 			// Objective properties
-			FTransform EndEE = Offset * Objective;
-			EndEE.SetScale3D(Hierarchy->GetInitialGlobalTransform(Chain.Last()).GetScale3D());
+			const FTransform EndEETarget = GET_IK_OBJECTIVE_TRANSFORM();
 
 			// Compute initial leg properties
 			const FTransform InitialUpper = Hierarchy->GetInitialGlobalTransform(Chain[0]);
@@ -102,7 +101,7 @@ FRigUnit_HingeIK_Execute()
 			FRigUnit_BendTowards::BendTowards(Chain[1], Chain[2], Objective.GetLocation(), Hierarchy, ScaleType, PropagateToChildren == EPropagation::All);
 
 			// Set foot transform
-			EE.SetRotation(EndEE.GetRotation());
+			EE.SetRotation(EndEETarget.GetRotation());
 			EE.SetScale3D(InitialEE.GetScale3D());
 			EE.SetLocation(Objective.GetLocation());
 			Hierarchy->SetGlobalTransform(Chain[2], EE, false, PropagateToChildren != EPropagation::Off);

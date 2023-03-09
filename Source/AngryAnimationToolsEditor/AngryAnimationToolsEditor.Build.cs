@@ -1,4 +1,4 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+
 
 using UnrealBuildTool;
 
@@ -32,6 +32,7 @@ public class AngryAnimationToolsEditor : ModuleRules
                 "MovieSceneTracks",
                 "LevelSequenceEditor",
                 "EditorStyle",
+                "AnimationEditor",
                 "UnrealEd"
             }
 			);

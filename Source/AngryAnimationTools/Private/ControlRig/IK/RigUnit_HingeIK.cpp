@@ -1,4 +1,4 @@
-// The Gateway of Realities: Planes of Existence.
+
 
 #include "ControlRig/IK/RigUnit_HingeIK.h"
 #include "ControlRig/RigUnit_BendTowards.h"

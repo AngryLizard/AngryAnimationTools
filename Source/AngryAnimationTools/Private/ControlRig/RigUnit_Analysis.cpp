@@ -1,4 +1,4 @@
-// The Gateway of Realities: Planes of Existence.
+
 
 #include "ControlRig/RigUnit_Analysis.h"
 #include "Math/Matrix3x3.h"

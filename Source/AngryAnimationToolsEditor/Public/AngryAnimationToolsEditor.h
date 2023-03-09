@@ -1,4 +1,4 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+
 
 #pragma once
 
@@ -31,11 +31,17 @@ public:
 	virtual void StartupModule() override;
 	virtual void ShutdownModule() override;
 
+	void OnAssetOpening(const TArray<UObject*>& Objects, IAssetEditorInstance* Editor);
+
 	void UpdateSequencer(TSharedRef<ISequencer> Sequencer);
+	void FillSequenceEditorToolbar(FToolBarBuilder& ToolbarBuilder);
+	void RepairSequence();
 
 	TWeakPtr<ISequencer> GetSequencer() const { return CurrentSequencer; };
 
 private:
+	TSharedPtr<FExtender> ToolbarExtender;
+	TArray<UAnimSequence*> OpenedAnims;
 
 	FDelegateHandle OnSequencerCreatedHandle;
 	TWeakPtr<ISequencer> CurrentSequencer;

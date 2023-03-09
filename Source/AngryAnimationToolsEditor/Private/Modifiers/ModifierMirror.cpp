@@ -1,4 +1,4 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+
 
 #include "Modifiers/ModifierMirror.h"
 #include "ISequencer.h"

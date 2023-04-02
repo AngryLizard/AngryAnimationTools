@@ -27,7 +27,7 @@ void FAngrySequencerCustomization::RegisterSequencerCustomization(FSequencerCust
 	FSequencerCustomizationInfo Customization;
 
 	TSharedRef<FExtender> ToolbarExtender = MakeShared<FExtender>();
-	ToolbarExtender->AddToolBarExtension("Base Commands", EExtensionHook::After, nullptr, FToolBarExtensionDelegate::CreateRaw(this, &FAngrySequencerCustomization::ExtendSequencerToolbar));
+	ToolbarExtender->AddToolBarExtension("BaseCommands", EExtensionHook::After, nullptr, FToolBarExtensionDelegate::CreateRaw(this, &FAngrySequencerCustomization::ExtendSequencerToolbar));
 	Customization.ToolbarExtender = ToolbarExtender;
 
 	Customization.OnAssetsDrop.BindLambda([](const TArray<UObject*>&, const FAssetDragDropOp&) -> ESequencerDropResult { return ESequencerDropResult::DropDenied; });

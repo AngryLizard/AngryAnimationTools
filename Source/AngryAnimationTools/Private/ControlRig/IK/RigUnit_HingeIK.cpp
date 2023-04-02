@@ -10,7 +10,7 @@ bool FRigUnit_HingeIK::ComputeTriangle(float a, float b, float s, float& h, floa
 {
 	if (a + b < s)
 	{
-		x = s / 2;
+		x = s * (a / (a + b));
 		h = 0.0f;
 		return false;
 	}
@@ -22,7 +22,7 @@ bool FRigUnit_HingeIK::ComputeTriangle(float a, float b, float s, float& h, floa
 
 	if (hh < 0.0f)
 	{
-		x = s / 2;
+		x = s * (a / (a + b));
 		h = 0.0f;
 		return false;
 	}
@@ -66,7 +66,7 @@ FRigUnit_HingeIK_Execute()
 			float ChainMaxLength = InitialLengths.X + InitialLengths.Y;
 			if (!FMath::IsNearlyZero(ChainMaxLength))
 			{
-				const float TargetRatio = TargetLength / ChainMaxLength;
+				const float TargetRatio = TargetLength;
 
 				ChainMaxLength *= TargetRatio;
 				InitialLengths *= TargetRatio;

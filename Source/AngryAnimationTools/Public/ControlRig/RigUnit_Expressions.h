@@ -53,16 +53,22 @@ public:
 		FVector Target;
 
 	/**
-	 * Offset rotation
+	 * Alignment offset rotation
 	 */
 	UPROPERTY(meta = (Input, ExpandByDefault))
-		FRotator Offset;
+		FRotator AxisOffset;
 
 	/**
 	 * Whether to propagate applied transform
 	 */
 	UPROPERTY(meta = (Input, ExpandByDefault))
 		bool bPropagateToChildren = false;
+
+	/**
+	 * Local objective offset rotation
+	 */
+	UPROPERTY(meta = (Input, Constant, DetailsOnly))
+		FRotator OffsetRotation;
 
 	/**
 	 * Debug settings
@@ -127,22 +133,28 @@ public:
 		float Range = 30.0f;
 
 	/**
-	 * Whether to propagate applied transform
-	 */
-	UPROPERTY(meta = (Input, ExpandByDefault))
-		bool bPropagateToChildren = false;
-
-	/**
 	 * Iris direction
 	 */
 	UPROPERTY(meta = (Input))
 		FVector IrisDirection;
 
 	/**
-	 * Offset rotation
+	 * Alignment offset rotation
 	 */
 	UPROPERTY(meta = (Input, ExpandByDefault))
-		FRotator Offset;
+		FRotator AxisOffset;
+
+	/**
+	 * Whether to propagate applied transform
+	 */
+	UPROPERTY(meta = (Input, ExpandByDefault))
+		bool bPropagateToChildren = false;
+
+	/**
+	 * Local objective offset rotation
+	 */
+	UPROPERTY(meta = (Input, Constant, DetailsOnly))
+		FRotator OffsetRotation;
 
 	/**
 	 * Debug settings

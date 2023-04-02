@@ -133,6 +133,8 @@ FRigUnit_ClaviceIK_Execute()
 			EE.SetRotation(EndEETarget.GetRotation());
 			EE.SetLocation(ObjectiveLocation);
 			Hierarchy->SetGlobalTransform(Chain[3], EE, false, PropagateToChildren != EPropagation::Off);
+
+			Stretch = ObjectiveDistance / InitialHandDelta.Size();
 		}
 	}
 }

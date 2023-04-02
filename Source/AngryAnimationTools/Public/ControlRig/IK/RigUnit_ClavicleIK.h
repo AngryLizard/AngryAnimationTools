@@ -8,7 +8,8 @@
 #include "RigUnit_ClavicleIK.generated.h"
 
 /**
- *
+ * Inverse kinematics solver for an arm that is attached to a clavikle bone. Within given bounds the clavikle offsets towards the objective, which
+ * simulates shoulder movement. Shoulder movement can be biased towards up-down movement.
  */
 USTRUCT(meta = (DisplayName = "Clavice IK", Category = "IK", Keywords = "Angry,IK", PrototypeName = "ClaviceIK", NodeColor = "1.0 0.44 0.0"))
 struct ANGRYANIMATIONTOOLS_API FRigUnit_ClaviceIK : public FRigUnit_IK
@@ -57,4 +58,10 @@ public:
 	 */
 	UPROPERTY(meta = (Input))
 		EBendScaleType ScaleType = EBendScaleType::Default;
+
+	/**
+	 * Stretch ratio, 1.0 for initial, 0.0 for all the way compressed
+	 */
+	UPROPERTY(meta = (Output))
+		float Stretch = 1.0f;
 };

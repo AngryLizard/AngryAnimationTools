@@ -8,7 +8,7 @@
 #include "RigUnit_DigitigradeIK.generated.h"
 
 /**
- *
+ * Digitigrade leg IK solver. Properly rotates ankle and knee bone.
  */
 USTRUCT(meta = (DisplayName = "Digitigrade IK", Category = "IK", Keywords = "Angry,IK", PrototypeName = "DigitigradeIK", NodeColor = "1.0 0.44 0.0"))
 struct ANGRYANIMATIONTOOLS_API FRigUnit_DigitigradeIK : public FRigUnit_IK
@@ -62,5 +62,11 @@ public:
 	* How to scale the bones
 	 */
 	UPROPERTY(meta = (Input))
-		EBendScaleType ScaleType = EBendScaleType::Default;
+		EBendScaleType ScaleType = EBendScaleType::None;
+
+	/**
+	 * Stretch ratio, 1.0 for initial, 0.0 for all the way compressed
+	 */
+	UPROPERTY(meta = (Output))
+		float Stretch = 1.0f;
 };

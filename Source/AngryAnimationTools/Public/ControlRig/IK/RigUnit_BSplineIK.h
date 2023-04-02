@@ -8,7 +8,7 @@
 #include "RigUnit_BSplineIK.generated.h"
 
 /**
- *
+ * Moves a chain of bones along a B-Spline.
  */
 USTRUCT(meta = (DisplayName = "B-Spline IK", Category = "IK", Keywords = "Angry,IK", PrototypeName = "BSplineIK", NodeColor = "1.0 0.44 0.0"))
 struct ANGRYANIMATIONTOOLS_API FRigUnit_BSplineIK : public FRigUnit_IK
@@ -56,5 +56,5 @@ public:
 	* How to scale the bones
 	 */
 	UPROPERTY(meta = (Input))
-		EBendScaleType ScaleType = EBendScaleType::Default;
+		EBendScaleType ScaleType = EBendScaleType::None;
 };

@@ -67,8 +67,9 @@ FRigUnit_DigitigradeIK_Execute()
 			const FVector ObjectiveLocation = PelvisLocation + ObjectiveNormal * ObjectiveDistance;
 
 			// Compute proper rotation invariant direction according to initial pose
-			const FQuat LegRotation = FQuat::FindBetweenNormals(InitialFootDelta.GetSafeNormal(), ObjectiveNormal);
-			const FVector InitialKneeDirection = FVector::VectorPlaneProject(InitialKneeDelta - InitialAnkleDelta, InitialFootDelta.GetSafeNormal());
+			const FVector InitialFootNormal = InitialFootDelta.GetSafeNormal();
+			const FQuat LegRotation = FQuat::FindBetweenNormals(InitialFootNormal, ObjectiveNormal);
+			const FVector InitialKneeDirection = FVector::VectorPlaneProject(InitialKneeDelta - InitialAnkleDelta, InitialFootNormal);
 			const FVector LegDirection = (LegRotation * InitialKneeDirection).GetSafeNormal();
 
 			if (DebugSettings.bEnabled)
@@ -142,6 +143,8 @@ FRigUnit_DigitigradeIK_Execute()
 				Context.DrawInterface->DrawLine(FTransform::Identity, ObjectiveLocation, ObjectiveLocation + EEForwardTarget * 20.0f, FLinearColor::Red, DebugSettings.Scale * 0.5f);
 				Context.DrawInterface->DrawLine(FTransform::Identity, ObjectiveLocation, ObjectiveLocation + EEUpTarget * 20.0f, FLinearColor::Blue, DebugSettings.Scale * 0.5f);
 			}
+
+			Stretch = ObjectiveDistance / InitialFootDelta.Size();
 		}
 	}
 }

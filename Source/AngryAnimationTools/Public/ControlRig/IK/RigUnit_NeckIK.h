@@ -8,7 +8,7 @@
 #include "RigUnit_NeckIK.generated.h"
 
 /**
- *
+ * IK solver that moves a chain of bones to bend the endeffector towards a target.
  */
 USTRUCT(meta = (DisplayName = "Neck IK", Category = "IK", Keywords = "Angry,IK", PrototypeName = "NeckIK", NodeColor = "1.0 0.44 0.0"))
 struct ANGRYANIMATIONTOOLS_API FRigUnit_NeckIK : public FRigUnit_IK
@@ -53,7 +53,7 @@ public:
 		FVector EndeffectorForward = FVector::ForwardVector;
 
 	/**
-	 * local forward direction of endeffector
+	 * local up direction of endeffector
 	 */
 	UPROPERTY(meta = (Input))
 		FVector EndeffectorUp = FVector::UpVector;

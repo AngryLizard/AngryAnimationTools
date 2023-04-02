@@ -8,7 +8,7 @@
 #include "RigUnit_HingeIK.generated.h"
 
 /**
- *
+ * Simple analytic IK solver for a hinge joint.
  */
 USTRUCT(meta = (DisplayName = "Hinge IK", Category = "IK", Keywords = "Angry,IK", PrototypeName = "HingeIK", NodeColor = "1.0 0.44 0.0"))
 struct ANGRYANIMATIONTOOLS_API FRigUnit_HingeIK : public FRigUnit_IK

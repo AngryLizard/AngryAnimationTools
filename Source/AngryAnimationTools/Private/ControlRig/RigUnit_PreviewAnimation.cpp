@@ -29,6 +29,7 @@ FRigUnit_PreviewAnimation_Execute()
 			const FReferenceSkeleton& Reference = Skeleton->GetReferenceSkeleton();
 			const FBoneIndexType BoneNum = Reference.GetNum();
 
+			// TODO: Make this work properly
 			WorkData.bInitialized = false;
 			if (!WorkData.bInitialized)
 			{

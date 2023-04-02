@@ -37,7 +37,7 @@ struct ANGRYANIMATIONTOOLS_API FSpineEffectorSettings
 
 
 /**
- *
+ * IK solver for a chain of bones that connects the chain with a target while also maintaining the general shape of that chain.
  */
 USTRUCT(meta = (DisplayName = "Spine IK", Category = "IK", Keywords = "Angry,IK", PrototypeName = "SpineIK", NodeColor = "1.0 0.44 0.0"))
 struct ANGRYANIMATIONTOOLS_API FRigUnit_SpineIK : public FRigUnit_IK

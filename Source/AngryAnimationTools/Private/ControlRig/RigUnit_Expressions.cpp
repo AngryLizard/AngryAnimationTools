@@ -29,7 +29,7 @@ FRigUnit_EyeLookAt_Execute()
 			// Objective properties
 
 			// Get current transform basis
-			FTransform Transform = FTransform(Offset) * Hierarchy->GetGlobalTransform(Cache);
+			FTransform Transform = FTransform(AxisOffset) * Hierarchy->GetGlobalTransform(Cache);
 			const FVector CurrentForward = Transform.GetUnitAxis(EAxis::Y);
 			const FVector CurrentRight = -Transform.GetUnitAxis(EAxis::X);
 			const FVector CurrentUp = Transform.GetUnitAxis(EAxis::Z);
@@ -48,7 +48,7 @@ FRigUnit_EyeLookAt_Execute()
 			const FVector TargetDirection = (Target - Transform.GetLocation()).GetSafeNormal();
 			const FVector LocalDirection = CenterRotation.Inverse() * TargetDirection;
 
-			const FQuat LocalOffset = Offset.Quaternion();
+			const FQuat LocalOffset = AxisOffset.Quaternion();
 			const FVector LocalForward = LocalOffset.GetAxisY(); 
 			const FVector LocalRight = -LocalOffset.GetAxisX();
 			const FVector LocalUp = LocalOffset.GetAxisZ();
@@ -64,7 +64,7 @@ FRigUnit_EyeLookAt_Execute()
 			const FVector FinalDirection = CenterRotation * Restricted;
 			const FQuat Between = FQuat::FindBetween(CurrentForward, FinalDirection);
 
-			Transform.SetRotation(Between * Transform.GetRotation());
+			Transform.SetRotation(Between * Transform.GetRotation() * OffsetRotation.Quaternion());
 
 			Hierarchy->SetGlobalTransform(Cache, Transform, bPropagateToChildren);
 
@@ -99,7 +99,7 @@ FRigUnit_EyelidDisplacement_Execute()
 		else
 		{
 			// Get current transform basis
-			FTransform Transform = FTransform(Offset) * Hierarchy->GetGlobalTransform(Cache);
+			FTransform Transform = FTransform(AxisOffset) * Hierarchy->GetGlobalTransform(Cache);
 			const FVector CurrentForward = Transform.GetUnitAxis(EAxis::Y);
 			const FVector CurrentRight = -Transform.GetUnitAxis(EAxis::X);
 			const FVector CurrentUp = Transform.GetUnitAxis(EAxis::Z);
@@ -125,7 +125,7 @@ FRigUnit_EyelidDisplacement_Execute()
 			const float LidRadians = FMath::Lerp(FMath::Lerp(EyeRadians, RangeRadians, Openness), -RangeRadians, Closeness);
 			const FQuat LidRotation = FQuat(CurrentRight, CenterRadians + LidRadians);
 
-			Transform.SetRotation(LidRotation * Transform.GetRotation());
+			Transform.SetRotation(LidRotation * Transform.GetRotation() * OffsetRotation.Quaternion());
 
 			Hierarchy->SetGlobalTransform(Cache, Transform, bPropagateToChildren);
 

@@ -41,7 +41,7 @@ public:
 		FVector2D Customisation = FVector2D(1.0f, 1.0f);
 
 	/**
-	* How to scale the bones
+	 * How to scale the bones
 	 */
 	UPROPERTY(meta = (Input))
 		EBendScaleType ScaleType = EBendScaleType::None;

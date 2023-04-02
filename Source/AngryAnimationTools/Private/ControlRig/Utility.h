@@ -15,6 +15,17 @@ enum class EPropagation : uint8
 	All
 };
 
+UENUM(BlueprintType)
+enum class EBendScaleType : uint8
+{
+	/** Scale with local transform */
+	Default,
+	/** Don't scale at all */
+	None,
+	/** Stretch towards target */
+	Stretch
+};
+
 
 USTRUCT()
 struct FDebugSettings

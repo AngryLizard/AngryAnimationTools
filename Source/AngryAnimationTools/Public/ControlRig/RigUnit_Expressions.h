@@ -71,6 +71,12 @@ public:
 		FRotator OffsetRotation;
 
 	/**
+	 * Iris direction
+	 */
+	UPROPERTY(meta = (Output))
+		FVector Direction = FVector::ForwardVector;
+
+	/**
 	 * Debug settings
 	 */
 	UPROPERTY(meta = (Input, DetailsOnly))
@@ -155,6 +161,12 @@ public:
 	 */
 	UPROPERTY(meta = (Input, Constant, DetailsOnly))
 		FRotator OffsetRotation;
+
+	/**
+	 * Eyelid position
+	 */
+	UPROPERTY(meta = (Output))
+		float Position = 0.0f;
 
 	/**
 	 * Debug settings

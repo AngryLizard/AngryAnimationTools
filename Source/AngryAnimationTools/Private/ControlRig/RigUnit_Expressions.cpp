@@ -73,6 +73,8 @@ FRigUnit_EyeLookAt_Execute()
 				Context.DrawInterface->DrawLine(FTransform::Identity, Transform.GetLocation(), Transform.GetLocation() + FinalDirection * 15.0f, FLinearColor::White, DebugSettings.Scale * 0.5f);
 				Context.DrawInterface->DrawLine(FTransform::Identity, Transform.GetLocation(), Transform.GetLocation() + TargetDirection * 20.0f, FLinearColor::Black, DebugSettings.Scale * 0.25f);
 			}
+
+			Direction = FinalDirection.GetSafeNormal();
 		}
 	}
 }
@@ -131,8 +133,10 @@ FRigUnit_EyelidDisplacement_Execute()
 
 			if (DebugSettings.bEnabled)
 			{
-				Context.DrawInterface->DrawLine(FTransform::Identity, Transform.GetLocation(), Transform.GetLocation() + CenterRotation * CurrentForward * 15.0f, FLinearColor::White, DebugSettings.Scale * 0.5f);
+				Context.DrawInterface->DrawLine(FTransform::Identity, Transform.GetLocation(), Transform.GetLocation() + CenterRotation * CurrentUp * 15.0f, FLinearColor::White, DebugSettings.Scale * 0.5f);
 			}
+
+			Position = LidRadians / RangeRadians;
 		}
 	}
 }

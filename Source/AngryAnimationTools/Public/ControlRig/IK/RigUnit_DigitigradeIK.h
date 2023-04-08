@@ -62,7 +62,7 @@ public:
 	* How to scale the bones
 	 */
 	UPROPERTY(meta = (Input))
-		EBendScaleType ScaleType = EBendScaleType::None;
+		EBendScaleType ScaleType = EBendScaleType::Default;
 
 	/**
 	 * Stretch ratio, 1.0 for initial, 0.0 for all the way compressed

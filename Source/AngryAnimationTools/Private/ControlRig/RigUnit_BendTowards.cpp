@@ -20,13 +20,17 @@ FTransform FRigUnit_BendTowards::BendTowards(const FRigElementKey& Current, cons
 	{
 		case EBendScaleType::Default:
 		{
+			//FTransform NextTransform = Hierarchy->GetGlobalTransform(Next);
+
 			// Rotate current element (We need to propagate here in case other children are attached to current)
 			Hierarchy->SetGlobalTransform(Current, Transform, false, bPropagateToChildren);
 
 			// Move next element towards desired target without changing scale 
 			// (TODO: if bPropagateToChildren true we do some of these computations double)
-			FTransform NextTransform(Transform.GetRotation() * Local.GetRotation(), CurrentLocation + TargetDelta, Transform.GetScale3D() * Local.GetScale3D());
-			Hierarchy->SetGlobalTransform(Next, NextTransform, false, false);
+			FTransform NextTransform = Local * Transform;
+			NextTransform.SetLocation(CurrentLocation + TargetDelta);
+			Hierarchy->SetGlobalTransform(Next, NextTransform, false, bPropagateToChildren);
+			break;
 		}
 		case EBendScaleType::None:
 		{
@@ -38,6 +42,7 @@ FTransform FRigUnit_BendTowards::BendTowards(const FRigElementKey& Current, cons
 			{
 				Hierarchy->SetGlobalTransform(Next, Local * Transform, false, false);
 			}
+			break;
 		}
 		case EBendScaleType::Stretch:
 		{
@@ -57,6 +62,7 @@ FTransform FRigUnit_BendTowards::BendTowards(const FRigElementKey& Current, cons
 			{
 				Hierarchy->SetGlobalTransform(Next, Local * Transform, false, false);
 			}
+			break;
 		}
 	}
 	return Transform;

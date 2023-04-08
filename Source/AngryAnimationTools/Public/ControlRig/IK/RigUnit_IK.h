@@ -48,7 +48,7 @@ public:
 
 	/**
 	 * If set to true all of the global transforms of the children
-	 * of this bone will be recalculated based on their local transforms.
+	 * of the chain bones will be recalculated based on their local transforms.
 	 */
 	UPROPERTY(meta = (Input, Constant))
 		EPropagation PropagateToChildren = EPropagation::All;

@@ -52,5 +52,5 @@ public:
 	* How to scale the bones
 	 */
 	UPROPERTY(meta = (Input))
-		EBendScaleType ScaleType = EBendScaleType::None;
+		EBendScaleType ScaleType = EBendScaleType::Default;
 };

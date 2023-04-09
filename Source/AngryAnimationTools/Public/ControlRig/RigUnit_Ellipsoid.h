@@ -5,6 +5,7 @@
 #include "Units/RigUnit.h"
 #include "IK/RigUnit_IK.h"
 #include "ControlRig/Utility.h"
+#include "Kismet/KismetMathLibrary.h"
 
 #include "Animation/InputScaleBias.h"
 #include "RigUnit_Ellipsoid.generated.h"
@@ -288,6 +289,115 @@ public:
 	// Cache
 	UPROPERTY(Transient)
 		TArray<FCachedRigElement> EllipsoidCaches;
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+USTRUCT()
+struct FRigUnit_EllipsoidRingCastItem_WorkData
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+		FCachedRigElement Cache;
+
+	UPROPERTY()
+		FTransform Transform;
+
+	UPROPERTY()
+		FVector Delta;
+
+	UPROPERTY()
+		float TargetTime;
+
+	UPROPERTY()
+		float CurrentTime;
+
+	UPROPERTY()
+		bool bIsInitialised;
+
+	UPROPERTY()
+		FFloatSpringState SpringState;
+};
+
+USTRUCT()
+struct FRigUnit_EllipsoidRingCast_WorkData
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+		TArray<FCachedRigElement> EllipsoidCaches;
+
+	UPROPERTY()
+		TArray<FRigUnit_EllipsoidRingCastItem_WorkData> ItemCaches;
+};
+
+/**
+ * Moves a ring of bones around an ellipsoid
+ */
+USTRUCT(meta = (DisplayName = "Ellipsoid Ring Cast", Category = "Ellipsoid", Keywords = "Ellipsoid", PrototypeName = "EllipsoidRaycast", NodeColor = "1.0 0.44 0.0"))
+struct ANGRYANIMATIONTOOLS_API FRigUnit_EllipsoidRingCast : public FRigUnitMutable
+{
+	GENERATED_BODY()
+
+		FRigUnit_EllipsoidRingCast() {}
+
+	RIGVM_METHOD()
+		virtual void Execute(const FRigUnitContext& Context) override;
+
+public:
+
+	/**
+	* Ellipsoids used for collision
+	*/
+	UPROPERTY(meta = (Input))
+		TArray<FEllipsoid> Ellipsoids;
+
+	/**
+	 * Bones of the ring to adapt cast to the ellipsoid
+	 */
+	UPROPERTY(meta = (Input, ExpandByDefault))
+		FRigElementKeyCollection Items;
+
+	/**
+	* Axis for each item to use for raycasting
+	*/
+	UPROPERTY(meta = (Input))
+		FVector CastAxis = FVector(0, -1, 0);
+
+	/**
+	* Distance for each item to use for raycasting
+	*/
+	UPROPERTY(meta = (Input))
+		float CastDistance = 10.f;
+
+	/**
+	* Variance for how far items will adapt to their neighbours
+	*/
+	UPROPERTY(meta = (Input))
+		float SpreadVariance = 0.5f;
+
+	/**
+	* Used spring strength
+	*/
+	UPROPERTY(meta = (Input))
+		float SpringStrength = 3.0f;
+
+	/**
+	* Used spring damping
+	*/
+	UPROPERTY(meta = (Input))
+		float SpringDamping = 2.0f;
+
+	/**
+	 * Debug settings
+	 */
+	UPROPERTY(meta = (Input, DetailsOnly))
+		FDebugSettings DebugSettings;
+
+	// Cache
+	UPROPERTY(Transient)
+		FRigUnit_EllipsoidRingCast_WorkData WorkData;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

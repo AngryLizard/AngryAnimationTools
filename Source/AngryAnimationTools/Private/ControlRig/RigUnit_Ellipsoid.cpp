@@ -129,8 +129,15 @@ FRigUnit_EllipsoidPointPlaneProject_Execute()
 
 float FRigUnit_EllipsoidRaycast::ComputeEllispoidRaycast(const FTransform& Transform, float Radius, const FVector& Start, const FVector& End, FVector& Impact, FVector& Normal, float& Distance)
 {
-	const FVector RayStart = Transform.InverseTransformPosition(Start);
-	const FVector RayEnd = Transform.InverseTransformPosition(End);
+	FTransform NormalizedTransform = Transform;
+	FVector Scale = NormalizedTransform.GetScale3D();
+	if (FMath::IsNearlyZero(Scale.X)) Scale.X = 0.01f;
+	if (FMath::IsNearlyZero(Scale.Y)) Scale.Y = 0.01f;
+	if (FMath::IsNearlyZero(Scale.Z)) Scale.Z = 0.01f;
+	NormalizedTransform.SetScale3D(Scale);
+
+	const FVector RayStart = NormalizedTransform.InverseTransformPosition(Start);
+	const FVector RayEnd = NormalizedTransform.InverseTransformPosition(End);
 	const FVector RayDelta = RayEnd - RayStart;
 	const float RayLength = RayDelta.Size();
 
@@ -138,7 +145,7 @@ float FRigUnit_EllipsoidRaycast::ComputeEllispoidRaycast(const FTransform& Trans
 	{
 		Normal = FVector::ZeroVector;
 		Impact = End;
-		Distance = (Transform.GetLocation() - Impact).Size();
+		Distance = (NormalizedTransform.GetLocation() - Impact).Size();
 		return 1.f;
 	}
 
@@ -164,8 +171,8 @@ float FRigUnit_EllipsoidRaycast::ComputeEllispoidRaycast(const FTransform& Trans
 	Impact = Normal * Radius;
 
 	// Transform back to world
-	Normal = Transform.TransformVectorNoScale((Normal / Transform.GetScale3D())).GetSafeNormal();
-	Impact = Transform.TransformPosition(Impact);
+	Normal = NormalizedTransform.TransformVectorNoScale((Normal / NormalizedTransform.GetScale3D())).GetSafeNormal();
+	Impact = NormalizedTransform.TransformPosition(Impact);
 
 	Distance = RaySphereDistance - Radius;
 	return Time;
@@ -261,6 +268,129 @@ FRigUnit_EllipsoidRaycastMulti_Execute()
 	}
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+FRigUnit_EllipsoidRingCast_Execute()
+{
+	DECLARE_SCOPE_HIERARCHICAL_COUNTER_RIGUNIT()
+	URigHierarchy* Hierarchy = ExecuteContext.Hierarchy;
+
+	if (Context.State == EControlRigState::Init)
+	{
+		WorkData.EllipsoidCaches.Reset(Ellipsoids.Num());
+		WorkData.ItemCaches.Reset(Items.Num());
+		return;
+	}
+
+	if (Context.State == EControlRigState::Update)
+	{
+		const int32 EllipsoidNum = Ellipsoids.Num();
+		if (EllipsoidNum != WorkData.EllipsoidCaches.Num())
+		{
+			WorkData.EllipsoidCaches.SetNumZeroed(EllipsoidNum);
+		}
+
+		const int32 ItemNum = Items.Num();
+		if (ItemNum != WorkData.ItemCaches.Num())
+		{
+			WorkData.ItemCaches.SetNumZeroed(ItemNum);
+			for (int32 ItemIndex = 0; ItemIndex < ItemNum; ItemIndex++)
+			{
+				FRigUnit_EllipsoidRingCastItem_WorkData& ItemCache = WorkData.ItemCaches[ItemIndex];
+				UKismetMathLibrary::ResetFloatSpringState(ItemCache.SpringState);
+				ItemCache.bIsInitialised = false;
+				ItemCache.CurrentTime = 1.f;
+			}
+		}
+
+		for (int32 ItemIndex = 0; ItemIndex < ItemNum; ItemIndex++)
+		{
+			const FRigElementKey& Item = Items[ItemIndex];
+			FRigUnit_EllipsoidRingCastItem_WorkData& ItemCache = WorkData.ItemCaches[ItemIndex];
+			if (!ItemCache.Cache.UpdateCache(Item, Hierarchy))
+			{
+				UE_CONTROLRIG_RIGUNIT_REPORT_WARNING(TEXT("key '%s' is not valid."), *Item.ToString());
+			}
+			else
+			{
+				ItemCache.Transform = Hierarchy->GetGlobalTransform(ItemCache.Cache);
+				const FVector End = ItemCache.Transform.GetLocation();
+				ItemCache.Delta = ItemCache.Transform.TransformVectorNoScale(CastAxis) * CastDistance;
+
+				ItemCache.TargetTime = 1.0f;
+				for (int32 EllipsoidIndex = 0; EllipsoidIndex < EllipsoidNum; EllipsoidIndex++)
+				{
+					FCachedRigElement& EllipsoidCache = WorkData.EllipsoidCaches[EllipsoidIndex];
+					const FEllipsoid& Ellipsoid = Ellipsoids[EllipsoidIndex];
+
+					if (!EllipsoidCache.UpdateCache(Ellipsoid.Key, Hierarchy))
+					{
+						UE_CONTROLRIG_RIGUNIT_REPORT_WARNING(TEXT("key '%s' is not valid."), *Ellipsoid.Key.ToString());
+					}
+					else
+					{
+						const FTransform Transform = Hierarchy->GetGlobalTransform(EllipsoidCache);
+
+						float CurrDistance;
+						FVector CurrImpact, CurrNormal;
+						const float CurrTime = FRigUnit_EllipsoidRaycast::ComputeEllispoidRaycast(Transform, Ellipsoid.Radius, End + ItemCache.Delta, End, CurrImpact, CurrNormal, CurrDistance);
+						if (CurrDistance < 0.01f && CurrTime < ItemCache.TargetTime)
+						{
+							ItemCache.TargetTime = CurrTime;
+						}
+					}
+				}
+
+				if (DebugSettings.bEnabled)
+				{
+					Context.DrawInterface->DrawLine(FTransform::Identity, End + ItemCache.Delta, End, FLinearColor::Red, DebugSettings.Scale * 0.1f);
+					Context.DrawInterface->DrawPoint(FTransform::Identity, FMath::Lerp(End + ItemCache.Delta, End, ItemCache.TargetTime), DebugSettings.Scale * 5.0f, FLinearColor::Green);
+				}
+			}
+		}
+
+		for (int32 ItemIndex = 0; ItemIndex < ItemNum; ItemIndex++)
+		{
+			FRigUnit_EllipsoidRingCastItem_WorkData& ItemCache = WorkData.ItemCaches[ItemIndex];
+			if (ItemCache.Cache.IsValid())
+			{
+				float ConstrainedTime = 1.f;
+
+				const float ItemRatio = ((float)ItemIndex) / ItemNum;
+				for (int32 OtherIndex = 0; OtherIndex < ItemNum; OtherIndex++)
+				{
+					const FRigUnit_EllipsoidRingCastItem_WorkData& OtherCache = WorkData.ItemCaches[OtherIndex];
+					if (OtherCache.Cache.IsValid())
+					{
+						const float OtherRatio = ((float)OtherIndex) / ItemNum;
+
+						const float Value =
+							FMath::Exp(FMath::Square(OtherRatio - (ItemRatio - 1.0f)) / -SpreadVariance) +
+							FMath::Exp(FMath::Square(OtherRatio - (ItemRatio + 0.0f)) / -SpreadVariance) +
+							FMath::Exp(FMath::Square(OtherRatio - (ItemRatio + 1.0f)) / -SpreadVariance);
+
+						ConstrainedTime = FMath::Min(ConstrainedTime, FMath::Lerp(1.0f, OtherCache.TargetTime, FMath::Clamp(Value, 0.f, 1.f)));
+					}
+				}
+
+				if (ConstrainedTime < ItemCache.CurrentTime)
+				{
+					ItemCache.CurrentTime = ConstrainedTime;
+					ItemCache.SpringState.Reset();
+				}
+
+				ItemCache.CurrentTime = UKismetMathLibrary::FloatSpringInterp(
+					ItemCache.CurrentTime, ConstrainedTime, ItemCache.SpringState,
+					SpringStrength, SpringDamping, Context.DeltaTime, 1.f, 1.f,
+					false, -1, 1, ItemCache.bIsInitialised);
+				ItemCache.bIsInitialised = true;
+
+				ItemCache.Transform.AddToTranslation((1.0f - ItemCache.CurrentTime) * ItemCache.Delta);
+				Hierarchy->SetGlobalTransform(ItemCache.Cache.GetKey(), ItemCache.Transform, false, true);
+			}
+		}
+	}
+}
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 FVector FRigUnit_EllipsoidLineCollide::ComputeEllispoidLineCollide(const FTransform& Transform, float Radius, const FVector& Start, const FVector& End, const FVector& Direction, float Adapt)

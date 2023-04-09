@@ -60,7 +60,8 @@ void InitialiseBendTransforms(
 	Transforms.Reserve(ChainNum);
 	for (int32 Index = 0; Index < ChainNum; Index++)
 	{
-		Rest.Emplace(Context.Hierarchy->GetInitialLocalTransform(Chain[Index]));
+		//Rest.Emplace(Context.Hierarchy->GetInitialLocalTransform(Chain[Index]));
+		Rest.Emplace(Context.Hierarchy->GetLocalTransform(Chain[Index]));
 		Transforms.Emplace(Context.Hierarchy->GetGlobalTransform(Chain[Index]));
 		StartChain.Emplace(StartEE);
 		EndChain.Emplace(EndEETarget);

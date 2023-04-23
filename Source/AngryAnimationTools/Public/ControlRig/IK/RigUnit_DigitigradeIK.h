@@ -53,6 +53,12 @@ public:
 		float KneeHipDirectionWeight = 1.0f;
 
 	/**
+	 * Offset rotation for knee direction
+	 */
+	UPROPERTY(meta = (Input))
+		FRotator KneeOffset = FRotator::ZeroRotator;
+
+	/**
 	 * Length customisation
 	 */
 	UPROPERTY(meta = (Input))

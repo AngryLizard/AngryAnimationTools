@@ -373,11 +373,11 @@ FRigUnit_EllipsoidRingCast_Execute()
 					}
 				}
 
-				if (ConstrainedTime < ItemCache.CurrentTime)
+				/*if (ConstrainedTime < ItemCache.CurrentTime)
 				{
 					ItemCache.CurrentTime = ConstrainedTime;
 					ItemCache.SpringState.Reset();
-				}
+				}*/
 
 				ItemCache.CurrentTime = UKismetMathLibrary::FloatSpringInterp(
 					ItemCache.CurrentTime, ConstrainedTime, ItemCache.SpringState,

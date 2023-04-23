@@ -68,7 +68,7 @@ FRigUnit_DigitigradeIK_Execute()
 
 			// Compute proper rotation invariant direction according to initial pose
 			const FVector InitialFootNormal = InitialFootDelta.GetSafeNormal();
-			const FQuat LegRotation = FQuat::FindBetweenNormals(InitialFootNormal, ObjectiveNormal);
+			const FQuat LegRotation = FQuat::FindBetweenNormals(InitialFootNormal, ObjectiveNormal) * KneeOffset.Quaternion();
 			const FVector InitialKneeDirection = FVector::VectorPlaneProject(InitialKneeDelta - InitialAnkleDelta, InitialFootNormal);
 			const FVector LegDirection = (LegRotation * InitialKneeDirection).GetSafeNormal();
 

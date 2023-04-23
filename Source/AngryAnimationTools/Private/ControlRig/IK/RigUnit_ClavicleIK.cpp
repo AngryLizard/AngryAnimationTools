@@ -86,7 +86,7 @@ FRigUnit_ClaviceIK_Execute()
 
 			// Compute proper rotation invariant direction according to initial pose
 			const FVector InitialHandNormal = InitialHandDelta.GetSafeNormal();
-			const FQuat ArmRotation = FQuat::FindBetweenNormals(InitialHandNormal, ObjectiveNormal);
+			const FQuat ArmRotation = FQuat::FindBetweenNormals(InitialHandNormal, ObjectiveNormal) * EllbowOffset.Quaternion();
 			const FVector InitialArmDelta = FVector::VectorPlaneProject(InitialEllbowDelta, InitialHandNormal);
 			const FVector ArmDirection = (ArmRotation * InitialArmDelta).GetSafeNormal();
 

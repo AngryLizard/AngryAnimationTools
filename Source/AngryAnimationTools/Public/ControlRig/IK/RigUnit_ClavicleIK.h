@@ -48,6 +48,12 @@ public:
 		FVector EllbowAlignmentAxis = FVector::ForwardVector;
 
 	/**
+	 * Offset rotation for ellbow direction
+	 */
+	UPROPERTY(meta = (Input))
+		FRotator EllbowOffset = FRotator::ZeroRotator;
+
+	/**
 	 * Length customisation
 	 */
 	UPROPERTY(meta = (Input))

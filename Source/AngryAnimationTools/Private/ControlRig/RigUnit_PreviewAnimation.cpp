@@ -19,6 +19,11 @@ FRigUnit_PreviewAnimation_Execute()
 
 	if (Context.State == EControlRigState::Update)
 	{
+		if (!Hierarchy)
+		{
+			return;
+		}
+
 		if (!IsValid(PreviewSettings.PreviewAnimation))
 		{
 			UE_CONTROLRIG_RIGUNIT_REPORT_WARNING(TEXT("No preview animation was supplied"));

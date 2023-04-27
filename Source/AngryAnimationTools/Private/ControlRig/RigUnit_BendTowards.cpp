@@ -72,6 +72,10 @@ FRigUnit_BendTowards_Execute()
 {
 	DECLARE_SCOPE_HIERARCHICAL_COUNTER_RIGUNIT();
 	URigHierarchy* Hierarchy = ExecuteContext.Hierarchy;
+	if (!Hierarchy)
+	{
+		return;
+	}
 
 	if (Context.State == EControlRigState::Init)
 	{
@@ -80,6 +84,11 @@ FRigUnit_BendTowards_Execute()
 
 	if (Context.State == EControlRigState::Update)
 	{
+		if (!Hierarchy)
+		{
+			return;
+		}
+
 		BendTowards(Key, NextKey, TargetLocation, Hierarchy, ScaleType, PropagateToChildren, Alpha);
 	}
 }

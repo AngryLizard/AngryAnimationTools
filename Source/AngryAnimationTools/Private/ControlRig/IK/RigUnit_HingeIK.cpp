@@ -44,6 +44,11 @@ FRigUnit_HingeIK_Execute()
 
 	if (Context.State == EControlRigState::Update)
 	{
+		if (!Hierarchy)
+		{
+			return;
+		}
+
 		if (Chain.Num() < 3)
 		{
 			UE_CONTROLRIG_RIGUNIT_REPORT_WARNING(TEXT("Chain has to have length at least 3."));

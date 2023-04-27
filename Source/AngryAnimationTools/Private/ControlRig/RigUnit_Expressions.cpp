@@ -20,6 +20,11 @@ FRigUnit_EyeLookAt_Execute()
 
 	if (Context.State == EControlRigState::Update)
 	{
+		if (!Hierarchy)
+		{
+			return;
+		}
+
 		if (!Cache.UpdateCache(Key, Hierarchy))
 		{
 			UE_CONTROLRIG_RIGUNIT_REPORT_WARNING(TEXT("Key '%s' is not valid."), *Key.ToString());
@@ -100,6 +105,11 @@ FRigUnit_EyelidDisplacement_Execute()
 		}
 		else
 		{
+			if (!Hierarchy)
+			{
+				return;
+			}
+
 			// Get current transform basis
 			FTransform Transform = FTransform(AxisOffset) * Hierarchy->GetGlobalTransform(Cache);
 			const FVector CurrentForward = Transform.GetUnitAxis(EAxis::Y);

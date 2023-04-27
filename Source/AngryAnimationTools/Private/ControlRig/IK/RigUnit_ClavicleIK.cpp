@@ -19,6 +19,10 @@ FRigUnit_ClaviceIK_Execute()
 
 	if (Context.State == EControlRigState::Update)
 	{
+		if (!Hierarchy)
+		{
+			return;
+		}
 		if (Chain.Num() < 4)
 		{
 			UE_CONTROLRIG_RIGUNIT_REPORT_WARNING(TEXT("Chain has to have length at least 4."));
@@ -58,7 +62,7 @@ FRigUnit_ClaviceIK_Execute()
 			const FVector ClavicleOrthogonal = FVector::VectorPlaneProject(ClavicleObjectiveNormal, ClavicleShoulderNormal).GetSafeNormal();
 
 			const float MaxArmLength = Lengths.Y + Lengths.Z;
-			const float ClavicleIntensity = FMath::Min(1.0f - (ClavicleShoulderDelta.GetSafeNormal() | ClavicleObjectiveNormal), 1.0f);
+			const float ClavicleIntensity = FMath::Min(1.0f - (ClavicleShoulderNormal | ClavicleObjectiveNormal), 1.0f);
 			const float ClavicleDistancity = FMath::Min((Shoulder.GetLocation() - EELocation).Size() / MaxArmLength, 1.0f);
 			const FVector ClavicleBiasVector = Clavicle.TransformVectorNoScale(ClavicleBias);
 			const float BiasIntensity = FMath::Exp(ClavicleBiasVector | ClavicleObjectiveNormal);

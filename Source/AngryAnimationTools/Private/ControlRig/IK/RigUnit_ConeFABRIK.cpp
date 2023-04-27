@@ -42,8 +42,14 @@ FRigUnit_ConeFABRIK_Execute()
 	if (Context.State == EControlRigState::Init)
 	{
 	}
-	else
+
+	if (Context.State == EControlRigState::Update)
 	{
+		if (!Hierarchy)
+		{
+			return;
+		}
+
 		const int32 ChainNum = Chain.Num();
 		if (ChainNum < 2)
 		{

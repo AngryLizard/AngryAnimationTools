@@ -22,6 +22,11 @@ FRigUnit_SoftLimitValue_Execute()
 
 	if (Context.State == EControlRigState::Update)
 	{
+		if (!Hierarchy)
+		{
+			return;
+		}
+
 		Output = SoftLimit(Value, Limit);
 	}
 }
@@ -71,6 +76,11 @@ FRigUnit_LimitRotation_Execute()
 
 	if (Context.State == EControlRigState::Update)
 	{
+		if (!Hierarchy)
+		{
+			return;
+		}
+
 		Output = LimitRotation(Quat, Limit, Soft);
 	}
 }
@@ -102,6 +112,11 @@ FRigUnit_LimitRotationAroundAxis_Execute()
 
 	if (Context.State == EControlRigState::Update)
 	{
+		if (!Hierarchy)
+		{
+			return;
+		}
+
 		Output = AxisLimitRotation(Quat, Axis, MinLimit, MaxLimit, Soft);
 	}
 }
@@ -120,6 +135,11 @@ FRigUnit_BellCurve_Execute()
 
 	if (Context.State == EControlRigState::Update)
 	{
+		if (!Hierarchy)
+		{
+			return;
+		}
+
 		Output = FMath::Exp(Value * Value / -Variance);
 	}
 }
@@ -138,6 +158,11 @@ FRigUnit_DistanceBellCurve_Execute()
 
 	if (Context.State == EControlRigState::Update)
 	{
+		if (!Hierarchy)
+		{
+			return;
+		}
+
 		const FVector Delta = Reference - Location;
 		Output = FMath::Exp(Delta.SizeSquared() / -Variance);
 	}

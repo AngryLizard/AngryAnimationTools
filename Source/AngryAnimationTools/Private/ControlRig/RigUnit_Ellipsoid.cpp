@@ -59,6 +59,11 @@ FRigUnit_EllipsoidProjection_Execute()
 
 	if (Context.State == EControlRigState::Update)
 	{
+		if (!Hierarchy)
+		{
+			return;
+		}
+
 		if (!EllipsoidCache.UpdateCache(Ellipsoid.Key, Hierarchy))
 		{
 			UE_CONTROLRIG_RIGUNIT_REPORT_WARNING(TEXT("key '%s' is not valid."), *Ellipsoid.Key.ToString());
@@ -108,6 +113,11 @@ FRigUnit_EllipsoidPointPlaneProject_Execute()
 
 	if (Context.State == EControlRigState::Update)
 	{
+		if (!Hierarchy)
+		{
+			return;
+		}
+
 		if (!EllipsoidCache.UpdateCache(Ellipsoid.Key, Hierarchy))
 		{
 			UE_CONTROLRIG_RIGUNIT_REPORT_WARNING(TEXT("key '%s' is not valid."), *Ellipsoid.Key.ToString());
@@ -191,6 +201,11 @@ FRigUnit_EllipsoidRaycast_Execute()
 
 	if (Context.State == EControlRigState::Update)
 	{
+		if (!Hierarchy)
+		{
+			return;
+		}
+
 		if (!EllipsoidCache.UpdateCache(Ellipsoid.Key, Hierarchy))
 		{
 			UE_CONTROLRIG_RIGUNIT_REPORT_WARNING(TEXT("key '%s' is not valid."), *Ellipsoid.Key.ToString());
@@ -226,6 +241,11 @@ FRigUnit_EllipsoidRaycastMulti_Execute()
 
 	if (Context.State == EControlRigState::Update)
 	{
+		if (!Hierarchy)
+		{
+			return;
+		}
+
 		const int32 EllipsoidNum = Ellipsoids.Num();
 		if (EllipsoidNum != EllipsoidCaches.Num())
 		{
@@ -284,6 +304,11 @@ FRigUnit_EllipsoidRingCast_Execute()
 
 	if (Context.State == EControlRigState::Update)
 	{
+		if (!Hierarchy)
+		{
+			return;
+		}
+
 		const int32 EllipsoidNum = Ellipsoids.Num();
 		if (EllipsoidNum != WorkData.EllipsoidCaches.Num())
 		{
@@ -459,6 +484,11 @@ FRigUnit_EllipsoidLineCollide_Execute()
 
 	if (Context.State == EControlRigState::Update)
 	{
+		if (!Hierarchy)
+		{
+			return;
+		}
+
 		if (!EllipsoidCache.UpdateCache(Ellipsoid.Key, Hierarchy))
 		{
 			UE_CONTROLRIG_RIGUNIT_REPORT_WARNING(TEXT("key '%s' is not valid."), *Ellipsoid.Key.ToString());
@@ -595,6 +625,11 @@ FRigUnit_EllipsoidTransformProject_Execute()
 
 	if (Context.State == EControlRigState::Update)
 	{
+		if (!Hierarchy)
+		{
+			return;
+		}
+
 		if (!EllipsoidCache.UpdateCache(Ellipsoid.Key, Hierarchy))
 		{
 			UE_CONTROLRIG_RIGUNIT_REPORT_WARNING(TEXT("key '%s' is not valid."), *Ellipsoid.Key.ToString());

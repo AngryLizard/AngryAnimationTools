@@ -19,6 +19,11 @@ FRigUnit_MeanDirection_Execute()
 
 	if (Context.State == EControlRigState::Update)
 	{
+		if (!Hierarchy)
+		{
+			return;
+		}
+
 		Output = FVector::ForwardVector;
 
 		if (!ReferenceCache.UpdateCache(ReferenceKey, Hierarchy))
@@ -66,6 +71,11 @@ FRigUnit_PowerDirection_Execute()
 
 	if (Context.State == EControlRigState::Update)
 	{
+		if (!Hierarchy)
+		{
+			return;
+		}
+
 		Output = FVector::ForwardVector;
 
 		TArray<FVector> Samples;
@@ -139,6 +149,11 @@ FRigUnit_ChainAnalysis_Execute()
 
 	if (Context.State == EControlRigState::Update)
 	{
+		if (!Hierarchy)
+		{
+			return;
+		}
+
 		if (Chain.Num() < 2)
 		{
 			UE_CONTROLRIG_RIGUNIT_REPORT_WARNING(TEXT("Chain has to have length at least 2."));

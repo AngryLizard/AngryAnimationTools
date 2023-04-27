@@ -18,6 +18,11 @@ FRigUnit_NeckIK_Execute()
 
 	if (Context.State == EControlRigState::Update)
 	{
+		if (!Hierarchy)
+		{
+			return;
+		}
+
 		const int32 ChainNum = Chain.Num();
 		if (ChainNum < 2)
 		{

@@ -19,6 +19,11 @@ FRigUnit_BSplineIK_Execute()
 
 	if (Context.State == EControlRigState::Update)
 	{
+		if (!Hierarchy)
+		{
+			return;
+		}
+
 		const int32 ChainCount = Chain.Num();
 		if (ChainCount < 2)
 		{

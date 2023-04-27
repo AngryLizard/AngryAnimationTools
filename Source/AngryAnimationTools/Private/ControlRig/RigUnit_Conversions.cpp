@@ -18,6 +18,11 @@ FRigUnit_SetTransformWithOffset_Execute()
 
 	if (Context.State == EControlRigState::Update)
 	{
+		if (!Hierarchy)
+		{
+			return;
+		}
+
 		if (!Cache.UpdateCache(Key, Hierarchy))
 		{
 			UE_CONTROLRIG_RIGUNIT_REPORT_WARNING(TEXT("Key '%s' is not valid."), *Key.ToString());
@@ -44,6 +49,11 @@ FRigUnit_CloneTransforms_Execute()
 
 	if (Context.State == EControlRigState::Update)
 	{
+		if (!Hierarchy)
+		{
+			return;
+		}
+
 		const int32 Num = Items.Num();
 		for (int32 Index = 0; Index < Num; Index++)
 		{
@@ -166,6 +176,11 @@ FRigUnit_RotationBetween_Execute()
 
 	if (Context.State == EControlRigState::Update)
 	{
+		if (!Hierarchy)
+		{
+			return;
+		}
+
 		Output = FQuat::FindBetweenVectors(Source, Target);
 	}
 }
@@ -184,6 +199,11 @@ FRigUnit_ProjectOntoPlane_Execute()
 
 	if (Context.State == EControlRigState::Update)
 	{
+		if (!Hierarchy)
+		{
+			return;
+		}
+
 		const FVector Delta = Point - Reference;
 		double Project = Delta | Direction;
 
@@ -211,6 +231,11 @@ FRigUnit_WarpAlongDirection_Execute()
 
 	if (Context.State == EControlRigState::Update)
 	{
+		if (!Hierarchy)
+		{
+			return;
+		}
+
 		const FVector Delta = Point - Reference;
 		const FVector Projected = Delta.ProjectOnToNormal(Direction);
 		const FVector Offset = Delta - Projected;
@@ -234,6 +259,11 @@ FRigUnit_ScaleToValue_Execute()
 
 	if (Context.State == EControlRigState::Update)
 	{
+		if (!Hierarchy)
+		{
+			return;
+		}
+
 		if (!Cache.UpdateCache(Key, Hierarchy))
 		{
 			UE_CONTROLRIG_RIGUNIT_REPORT_WARNING(TEXT("Cone '%s' is not valid."), *Key.ToString());

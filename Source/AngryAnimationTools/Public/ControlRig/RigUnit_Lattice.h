@@ -41,7 +41,7 @@ struct ANGRYANIMATIONTOOLS_API FRigUnit_LatticeTransform : public FRigUnitMutabl
 		FRigUnit_LatticeTransform() {}
 
 	RIGVM_METHOD()
-		virtual void Execute(const FRigUnitContext& Context) override;
+		virtual void Execute() override;
 
 public:
 

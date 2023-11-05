@@ -10,28 +10,19 @@ FRigUnit_SetTransformWithOffset_Execute()
 	DECLARE_SCOPE_HIERARCHICAL_COUNTER_RIGUNIT();
 	URigHierarchy* Hierarchy = ExecuteContext.Hierarchy;
 
-	if (Context.State == EControlRigState::Init)
+	if (!Hierarchy)
 	{
-		Cache.Reset();
 		return;
 	}
 
-	if (Context.State == EControlRigState::Update)
+	if (!Cache.UpdateCache(Key, Hierarchy))
 	{
-		if (!Hierarchy)
-		{
-			return;
-		}
-
-		if (!Cache.UpdateCache(Key, Hierarchy))
-		{
-			UE_CONTROLRIG_RIGUNIT_REPORT_WARNING(TEXT("Key '%s' is not valid."), *Key.ToString());
-		}
-		else
-		{
-			const FTransform Output = FTransform(OffsetRotation, OffsetTranslation) * Transform;
-			Hierarchy->SetGlobalTransform(Cache, Output, bPropagateToChildren);
-		}
+		UE_CONTROLRIG_RIGUNIT_REPORT_WARNING(TEXT("Key '%s' is not valid."), *Key.ToString());
+	}
+	else
+	{
+		const FTransform Output = FTransform(OffsetRotation, OffsetTranslation) * Transform;
+		Hierarchy->SetGlobalTransform(Cache, Output, bPropagateToChildren);
 	}
 }
 
@@ -42,27 +33,19 @@ FRigUnit_CloneTransforms_Execute()
 	DECLARE_SCOPE_HIERARCHICAL_COUNTER_RIGUNIT();
 	URigHierarchy* Hierarchy = ExecuteContext.Hierarchy;
 
-	if (Context.State == EControlRigState::Init)
+	if (!Hierarchy)
 	{
 		return;
 	}
 
-	if (Context.State == EControlRigState::Update)
+	const int32 Num = Items.Num();
+	for (int32 Index = 0; Index < Num; Index++)
 	{
-		if (!Hierarchy)
+		const FTransform Transform = Hierarchy->GetGlobalTransform(Items[Index]);
+		const FRigElementKey NewKey = FRigElementKey(Items[Index].Name, TargetType);
+		if (Hierarchy->GetIndex(NewKey) != INDEX_NONE)
 		{
-			return;
-		}
-
-		const int32 Num = Items.Num();
-		for (int32 Index = 0; Index < Num; Index++)
-		{
-			const FTransform Transform = Hierarchy->GetGlobalTransform(Items[Index]);
-			const FRigElementKey NewKey = FRigElementKey(Items[Index].Name, TargetType);
-			if (Hierarchy->GetIndex(NewKey) != INDEX_NONE)
-			{
-				Hierarchy->SetGlobalTransform(NewKey, Transform, false, false);
-			}
+			Hierarchy->SetGlobalTransform(NewKey, Transform, false, false);
 		}
 	}
 }
@@ -72,18 +55,10 @@ FRigUnit_CloneTransforms_Execute()
 FRigUnit_Rebase_Execute()
 {
 	DECLARE_SCOPE_HIERARCHICAL_COUNTER_RIGUNIT();
-
-	if (Context.State == EControlRigState::Init)
-	{
-		return;
-	}
-
-	if (Context.State == EControlRigState::Update)
-	{
-		Output = (Transform * FromSpace.Inverse());
-		Output.SetLocation(Output.GetLocation() * TranslationScale);
-		Output *= ToSpace;
-	}
+	
+	Output = (Transform * FromSpace.Inverse());
+	Output.SetLocation(Output.GetLocation() * TranslationScale);
+	Output *= ToSpace;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -92,17 +67,9 @@ FRigUnit_AffineRebase_Execute()
 {
 	DECLARE_SCOPE_HIERARCHICAL_COUNTER_RIGUNIT();
 
-	if (Context.State == EControlRigState::Init)
-	{
-		return;
-	}
-
-	if (Context.State == EControlRigState::Update)
-	{
-		Output.SetLocation((Transform.GetLocation() - FromSpace.GetLocation()) * TranslationScale + ToSpace.GetLocation());
-		Output.SetRotation((Transform.GetRotation() * FromSpace.GetRotation().Inverse()) * ToSpace.GetRotation());
-		Output.NormalizeRotation();
-	}
+	Output.SetLocation((Transform.GetLocation() - FromSpace.GetLocation()) * TranslationScale + ToSpace.GetLocation());
+	Output.SetRotation((Transform.GetRotation() * FromSpace.GetRotation().Inverse()) * ToSpace.GetRotation());
+	Output.NormalizeRotation();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -132,33 +99,25 @@ FRigUnit_AxisAlignRotation_Execute()
 {
 	DECLARE_SCOPE_HIERARCHICAL_COUNTER_RIGUNIT();
 
-	if (Context.State == EControlRigState::Init)
+	if (SourceForward.IsNearlyZero())
 	{
-		return;
+		UE_CONTROLRIG_RIGUNIT_REPORT_WARNING(TEXT("Source forward is null."));
 	}
-
-	if (Context.State == EControlRigState::Update)
+	else if (TargetForward.IsNearlyZero())
 	{
-		if (SourceForward.IsNearlyZero())
-		{
-			UE_CONTROLRIG_RIGUNIT_REPORT_WARNING(TEXT("Source forward is null."));
-		}
-		else if (TargetForward.IsNearlyZero())
-		{
-			UE_CONTROLRIG_RIGUNIT_REPORT_WARNING(TEXT("Target forward is null."));
-		}
-		else if (SourceUp.IsNearlyZero())
-		{
-			UE_CONTROLRIG_RIGUNIT_REPORT_WARNING(TEXT("Source up is null."));
-		}
-		else if (TargetUp.IsNearlyZero())
-		{
-			UE_CONTROLRIG_RIGUNIT_REPORT_WARNING(TEXT("Target up is null."));
-		}
-		else
-		{
-			Output = ComputeHeadingRotation(SourceForward, TargetForward.GetSafeNormal(), SourceUp, TargetUp.GetSafeNormal());
-		}
+		UE_CONTROLRIG_RIGUNIT_REPORT_WARNING(TEXT("Target forward is null."));
+	}
+	else if (SourceUp.IsNearlyZero())
+	{
+		UE_CONTROLRIG_RIGUNIT_REPORT_WARNING(TEXT("Source up is null."));
+	}
+	else if (TargetUp.IsNearlyZero())
+	{
+		UE_CONTROLRIG_RIGUNIT_REPORT_WARNING(TEXT("Target up is null."));
+	}
+	else
+	{
+		Output = ComputeHeadingRotation(SourceForward, TargetForward.GetSafeNormal(), SourceUp, TargetUp.GetSafeNormal());
 	}
 }
 
@@ -166,23 +125,15 @@ FRigUnit_AxisAlignRotation_Execute()
 
 FRigUnit_RotationBetween_Execute()
 {
-	DECLARE_SCOPE_HIERARCHICAL_COUNTER_RIGUNIT()
-		const URigHierarchy* Hierarchy = Context.Hierarchy;
+	DECLARE_SCOPE_HIERARCHICAL_COUNTER_RIGUNIT();
+	const URigHierarchy* Hierarchy = ExecuteContext.Hierarchy;
 
-	if (Context.State == EControlRigState::Init)
+	if (!Hierarchy)
 	{
 		return;
 	}
 
-	if (Context.State == EControlRigState::Update)
-	{
-		if (!Hierarchy)
-		{
-			return;
-		}
-
-		Output = FQuat::FindBetweenVectors(Source, Target);
-	}
+	Output = FQuat::FindBetweenVectors(Source, Target);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -190,31 +141,23 @@ FRigUnit_RotationBetween_Execute()
 FRigUnit_ProjectOntoPlane_Execute()
 {
 	DECLARE_SCOPE_HIERARCHICAL_COUNTER_RIGUNIT();
-	const URigHierarchy* Hierarchy = Context.Hierarchy;
+	const URigHierarchy* Hierarchy = ExecuteContext.Hierarchy;
 
-	if (Context.State == EControlRigState::Init)
+	if (!Hierarchy)
 	{
 		return;
 	}
 
-	if (Context.State == EControlRigState::Update)
-	{
-		if (!Hierarchy)
-		{
-			return;
-		}
+	const FVector Delta = Point - Reference;
+	double Project = Delta | Direction;
 
-		const FVector Delta = Point - Reference;
-		double Project = Delta | Direction;
+	const FVector Projected = Direction * Project;
 
-		const FVector Projected = Direction * Project;
+	const FVector Warp = Reference + Delta - Projected;
+	const FVector Intersection = FVector::PointPlaneProject(Warp, FPlane(Location, Normal));
 
-		const FVector Warp = Reference + Delta - Projected;
-		const FVector Intersection = FVector::PointPlaneProject(Warp, FPlane(Location, Normal));
-
-		Height = Project;
-		Projection = Intersection + Projected;
-	}
+	Height = Project;
+	Projection = Intersection + Projected;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -222,26 +165,18 @@ FRigUnit_ProjectOntoPlane_Execute()
 FRigUnit_WarpAlongDirection_Execute()
 {
 	DECLARE_SCOPE_HIERARCHICAL_COUNTER_RIGUNIT();
-	const URigHierarchy* Hierarchy = Context.Hierarchy;
+	const URigHierarchy* Hierarchy = ExecuteContext.Hierarchy;
 
-	if (Context.State == EControlRigState::Init)
+	if (!Hierarchy)
 	{
 		return;
 	}
 
-	if (Context.State == EControlRigState::Update)
-	{
-		if (!Hierarchy)
-		{
-			return;
-		}
+	const FVector Delta = Point - Reference;
+	const FVector Projected = Delta.ProjectOnToNormal(Direction);
+	const FVector Offset = Delta - Projected;
 
-		const FVector Delta = Point - Reference;
-		const FVector Projected = Delta.ProjectOnToNormal(Direction);
-		const FVector Offset = Delta - Projected;
-
-		Warped = Reference + Offset + Projected * Scale;
-	}
+	Warped = Reference + Offset + Projected * Scale;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -249,36 +184,27 @@ FRigUnit_WarpAlongDirection_Execute()
 FRigUnit_ScaleToValue_Execute()
 {
 	DECLARE_SCOPE_HIERARCHICAL_COUNTER_RIGUNIT();
-	const URigHierarchy* Hierarchy = Context.Hierarchy;
+	const URigHierarchy* Hierarchy = ExecuteContext.Hierarchy;
 
-	if (Context.State == EControlRigState::Init)
+	if (!Hierarchy)
 	{
-		Cache.Reset();
 		return;
 	}
 
-	if (Context.State == EControlRigState::Update)
+	if (!Cache.UpdateCache(Key, Hierarchy))
 	{
-		if (!Hierarchy)
+		UE_CONTROLRIG_RIGUNIT_REPORT_WARNING(TEXT("Cone '%s' is not valid."), *Key.ToString());
+	}
+	else
+	{
+		const FTransform Transform = Hierarchy->GetGlobalTransform(Cache);
+		if (Axis == EAxis::None)
 		{
-			return;
-		}
-
-		if (!Cache.UpdateCache(Key, Hierarchy))
-		{
-			UE_CONTROLRIG_RIGUNIT_REPORT_WARNING(TEXT("Cone '%s' is not valid."), *Key.ToString());
+			Output = Transform.GetScale3D().Size() / SQRT_THREE * 100.0f;
 		}
 		else
 		{
-			const FTransform Transform = Hierarchy->GetGlobalTransform(Cache);
-			if (Axis == EAxis::None)
-			{
-				Output = Transform.GetScale3D().Size() / SQRT_THREE * 100.0f;
-			}
-			else
-			{
-				Output = Transform.GetScale3D().GetComponentForAxis(Axis) * 100.0f;
-			}
+			Output = Transform.GetScale3D().GetComponentForAxis(Axis) * 100.0f;
 		}
 	}
 }

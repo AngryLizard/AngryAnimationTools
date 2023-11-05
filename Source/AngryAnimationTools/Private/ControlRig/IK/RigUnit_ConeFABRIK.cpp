@@ -38,52 +38,44 @@ FRigUnit_ConeFABRIK_Execute()
 {
 	DECLARE_SCOPE_HIERARCHICAL_COUNTER_RIGUNIT();
 	URigHierarchy* Hierarchy = ExecuteContext.Hierarchy;
-
-	if (Context.State == EControlRigState::Init)
+	if (!Hierarchy)
 	{
+		return;
 	}
 
-	if (Context.State == EControlRigState::Update)
+	const int32 ChainNum = Chain.Num();
+	if (ChainNum < 2)
 	{
-		if (!Hierarchy)
+		UE_CONTROLRIG_RIGUNIT_REPORT_WARNING(TEXT("Chain has to have length at least 2."));
+	}
+	else
+	{
+		const FTransform StartEE = Hierarchy->GetGlobalTransform(Chain.First());
+		const FTransform EndEETarget = GET_IK_OBJECTIVE_TRANSFORM();
+
+		// Populate transform lists
+		TArray<FTransform> Transforms, Rest;
+		Transforms.Reserve(ChainNum);
+		Rest.Reserve(ChainNum);
+		for (int32 Index = 0; Index < ChainNum; Index++)
 		{
-			return;
+			Transforms.Emplace(Hierarchy->GetGlobalTransform(Chain[Index]));
+			Rest.Emplace(Hierarchy->GetInitialGlobalTransform(Chain[Index]));
 		}
 
-		const int32 ChainNum = Chain.Num();
-		if (ChainNum < 2)
+		// Objective properties
+		const float MaxRadians = FMath::DegreesToRadians(MaxAngle);
+		for (int32 Iteration = 0; Iteration < Iterations; Iteration++)
 		{
-			UE_CONTROLRIG_RIGUNIT_REPORT_WARNING(TEXT("Chain has to have length at least 2."));
+			Transforms[0] = Fabrik(Transforms, Rest, 0, StartEE, EndEETarget, MaxRadians);
 		}
-		else
+
+		// Set bones to transforms
+		Hierarchy->SetGlobalTransform(Chain.First(), Transforms[0], false, PropagateToChildren != EPropagation::Off);
+		for (int32 Index = 1; Index < ChainNum - 1; Index++)
 		{
-			const FTransform StartEE = Context.Hierarchy->GetGlobalTransform(Chain.First());
-			const FTransform EndEETarget = GET_IK_OBJECTIVE_TRANSFORM();
-
-			// Populate transform lists
-			TArray<FTransform> Transforms, Rest;
-			Transforms.Reserve(ChainNum);
-			Rest.Reserve(ChainNum);
-			for (int32 Index = 0; Index < ChainNum; Index++)
-			{
-				Transforms.Emplace(Hierarchy->GetGlobalTransform(Chain[Index]));
-				Rest.Emplace(Hierarchy->GetInitialGlobalTransform(Chain[Index]));
-			}
-
-			// Objective properties
-			const float MaxRadians = FMath::DegreesToRadians(MaxAngle);
-			for (int32 Iteration = 0; Iteration < Iterations; Iteration++)
-			{
-				Transforms[0] = Fabrik(Transforms, Rest, 0, StartEE, EndEETarget, MaxRadians);
-			}
-
-			// Set bones to transforms
-			Hierarchy->SetGlobalTransform(Chain.First(), Transforms[0], false, PropagateToChildren != EPropagation::Off);
-			for (int32 Index = 1; Index < ChainNum - 1; Index++)
-			{
-				Hierarchy->SetGlobalTransform(Chain[Index], Transforms[Index], false, PropagateToChildren == EPropagation::All);
-			}
-			Hierarchy->SetGlobalTransform(Chain.Last(), Transforms.Last(), false, PropagateToChildren != EPropagation::Off);
+			Hierarchy->SetGlobalTransform(Chain[Index], Transforms[Index], false, PropagateToChildren == EPropagation::All);
 		}
+		Hierarchy->SetGlobalTransform(Chain.Last(), Transforms.Last(), false, PropagateToChildren != EPropagation::Off);
 	}
 }

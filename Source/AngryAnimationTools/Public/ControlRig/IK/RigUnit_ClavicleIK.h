@@ -19,7 +19,7 @@ struct ANGRYANIMATIONTOOLS_API FRigUnit_ClaviceIK : public FRigUnit_IK
 		FRigUnit_ClaviceIK() {}
 
 	RIGVM_METHOD()
-		virtual void Execute(const FRigUnitContext& Context) override;
+		virtual void Execute() override;
 
 public:
 

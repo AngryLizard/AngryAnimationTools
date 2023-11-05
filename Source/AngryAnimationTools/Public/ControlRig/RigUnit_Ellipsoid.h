@@ -45,7 +45,7 @@ struct ANGRYANIMATIONTOOLS_API FRigUnit_EllipsoidProjection : public FRigUnit
 		FRigUnit_EllipsoidProjection() {}
 
 	RIGVM_METHOD()
-		virtual void Execute(const FRigUnitContext& Context) override;
+		virtual void Execute() override;
 
 public:
 	static void ComputeEllispoidProjection(const FTransform& Transform, float Radius, const FVector& Point, FVector& Closest, FVector& Normal);
@@ -100,7 +100,7 @@ struct ANGRYANIMATIONTOOLS_API FRigUnit_EllipsoidPointPlaneProject : public FRig
 		FRigUnit_EllipsoidPointPlaneProject() {}
 
 	RIGVM_METHOD()
-		virtual void Execute(const FRigUnitContext& Context) override;
+		virtual void Execute() override;
 
 public:
 	static float ComputeEllispoidPointPlaneProject(const FTransform& Transform, float Radius, const FVector& Point, const FVector& Normal, FVector& Projected);
@@ -159,7 +159,7 @@ struct ANGRYANIMATIONTOOLS_API FRigUnit_EllipsoidRaycast : public FRigUnit
 		FRigUnit_EllipsoidRaycast() {}
 
 	RIGVM_METHOD()
-		virtual void Execute(const FRigUnitContext& Context) override;
+		virtual void Execute() override;
 
 public:
 	static float ComputeEllispoidRaycast(const FTransform& Transform, float Radius, const FVector& Start, const FVector& End, FVector& Impact, FVector& Normal, float& Distance);
@@ -239,7 +239,7 @@ struct ANGRYANIMATIONTOOLS_API FRigUnit_EllipsoidRaycastMulti : public FRigUnit
 		FRigUnit_EllipsoidRaycastMulti() {}
 
 	RIGVM_METHOD()
-		virtual void Execute(const FRigUnitContext& Context) override;
+		virtual void Execute() override;
 
 public:
 
@@ -343,7 +343,7 @@ struct ANGRYANIMATIONTOOLS_API FRigUnit_EllipsoidRingCast : public FRigUnitMutab
 		FRigUnit_EllipsoidRingCast() {}
 
 	RIGVM_METHOD()
-		virtual void Execute(const FRigUnitContext& Context) override;
+		virtual void Execute() override;
 
 public:
 
@@ -413,7 +413,7 @@ struct ANGRYANIMATIONTOOLS_API FRigUnit_EllipsoidLineCollide : public FRigUnit
 		FRigUnit_EllipsoidLineCollide() {}
 
 	RIGVM_METHOD()
-		virtual void Execute(const FRigUnitContext& Context) override;
+		virtual void Execute() override;
 
 public:
 	static FVector ComputeEllispoidLineCollide(const FTransform& Transform, float Radius, const FVector& Start, const FVector& End, const FVector& Direction, float Adapt);
@@ -478,7 +478,7 @@ struct ANGRYANIMATIONTOOLS_API FRigUnit_EllipsoidChainCollide : public FRigUnitM
 		FRigUnit_EllipsoidChainCollide() {}
 
 	RIGVM_METHOD()
-		virtual void Execute(const FRigUnitContext& Context) override;
+		virtual void Execute() override;
 
 public:
 
@@ -567,7 +567,7 @@ struct ANGRYANIMATIONTOOLS_API FRigUnit_EllipsoidTransformProject : public FRigU
 		FRigUnit_EllipsoidTransformProject() {}
 
 	RIGVM_METHOD()
-		virtual void Execute(const FRigUnitContext& Context) override;
+		virtual void Execute() override;
 
 public:
 

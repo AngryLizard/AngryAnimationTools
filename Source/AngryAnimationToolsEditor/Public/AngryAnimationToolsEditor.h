@@ -6,23 +6,6 @@
 #include "SequencerCustomizationManager.h"
 #include "Modules/ModuleManager.h"
 
-class FAngrySequencerCustomization : public ISequencerCustomization
-{
-public:
-	FAngrySequencerCustomization();
-
-	virtual void RegisterSequencerCustomization(FSequencerCustomizationBuilder& Builder) override;
-	virtual void UnregisterSequencerCustomization() override;
-
-private:
-	void ExtendSequencerToolbar(FToolBarBuilder& ToolbarBuilder);
-	TSharedRef<class SWidget> MakeModifiersMenu();
-	void BindCommands();
-
-	ISequencer* Sequencer;
-	TSharedRef<FUICommandList> ModifierCommandBindings;
-};
-
 class FAngryAnimationToolsEditorModule : public IModuleInterface
 {
 public:
@@ -40,9 +23,17 @@ public:
 	TWeakPtr<ISequencer> GetSequencer() const { return CurrentSequencer; };
 
 private:
+	void ExtendSequencerActions(FMenuBuilder& MenuBuilder);
+	TSharedRef<class SWidget> MakeModifiersMenu();
+	void BindModifierCommands();
+
+private:
 	TSharedPtr<FExtender> ToolbarExtender;
 	TArray<UAnimSequence*> OpenedAnims;
 
 	FDelegateHandle OnSequencerCreatedHandle;
 	TWeakPtr<ISequencer> CurrentSequencer;
+
+	TSharedPtr<FUICommandList> ModifierCommandBindings;
+	TSharedPtr<FExtender> ActionsMenuExtender;
 };

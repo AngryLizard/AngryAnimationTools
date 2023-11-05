@@ -77,18 +77,10 @@ FRigUnit_BendTowards_Execute()
 		return;
 	}
 
-	if (Context.State == EControlRigState::Init)
+	if (!Hierarchy)
 	{
 		return;
 	}
 
-	if (Context.State == EControlRigState::Update)
-	{
-		if (!Hierarchy)
-		{
-			return;
-		}
-
-		BendTowards(Key, NextKey, TargetLocation, Hierarchy, ScaleType, PropagateToChildren, Alpha);
-	}
+	BendTowards(Key, NextKey, TargetLocation, Hierarchy, ScaleType, PropagateToChildren, Alpha);
 }

@@ -18,7 +18,7 @@ struct ANGRYANIMATIONTOOLS_API FRigUnit_BSplineIK : public FRigUnit_IK
 		FRigUnit_BSplineIK() {}
 
 	RIGVM_METHOD()
-		virtual void Execute(const FRigUnitContext& Context) override;
+		virtual void Execute() override;
 
 public:
 

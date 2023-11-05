@@ -13,22 +13,14 @@ float FRigUnit_SoftLimitValue::SoftLimit(float Value, float Limit)
 FRigUnit_SoftLimitValue_Execute()
 {
 	DECLARE_SCOPE_HIERARCHICAL_COUNTER_RIGUNIT();
-	const URigHierarchy* Hierarchy = Context.Hierarchy;
+	const URigHierarchy* Hierarchy = ExecuteContext.Hierarchy;
 
-	if (Context.State == EControlRigState::Init)
+	if (!Hierarchy)
 	{
 		return;
 	}
 
-	if (Context.State == EControlRigState::Update)
-	{
-		if (!Hierarchy)
-		{
-			return;
-		}
-
-		Output = SoftLimit(Value, Limit);
-	}
+	Output = SoftLimit(Value, Limit);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -67,22 +59,14 @@ FQuat FRigUnit_LimitRotation::LimitRotation(const FQuat& Quat, float Limit, bool
 FRigUnit_LimitRotation_Execute()
 {
 	DECLARE_SCOPE_HIERARCHICAL_COUNTER_RIGUNIT();
-	const URigHierarchy* Hierarchy = Context.Hierarchy;
+	const URigHierarchy* Hierarchy = ExecuteContext.Hierarchy;
 
-	if (Context.State == EControlRigState::Init)
+	if (!Hierarchy)
 	{
 		return;
 	}
 
-	if (Context.State == EControlRigState::Update)
-	{
-		if (!Hierarchy)
-		{
-			return;
-		}
-
-		Output = LimitRotation(Quat, Limit, Soft);
-	}
+	Output = LimitRotation(Quat, Limit, Soft);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -103,67 +87,43 @@ FQuat FRigUnit_LimitRotationAroundAxis::AxisLimitRotation(const FQuat& Quat, con
 FRigUnit_LimitRotationAroundAxis_Execute()
 {
 	DECLARE_SCOPE_HIERARCHICAL_COUNTER_RIGUNIT();
-	const URigHierarchy* Hierarchy = Context.Hierarchy;
+	const URigHierarchy* Hierarchy = ExecuteContext.Hierarchy;
 
-	if (Context.State == EControlRigState::Init)
+	if (!Hierarchy)
 	{
 		return;
 	}
 
-	if (Context.State == EControlRigState::Update)
-	{
-		if (!Hierarchy)
-		{
-			return;
-		}
-
-		Output = AxisLimitRotation(Quat, Axis, MinLimit, MaxLimit, Soft);
-	}
+	Output = AxisLimitRotation(Quat, Axis, MinLimit, MaxLimit, Soft);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 FRigUnit_BellCurve_Execute()
 {
-	DECLARE_SCOPE_HIERARCHICAL_COUNTER_RIGUNIT()
-		const URigHierarchy* Hierarchy = Context.Hierarchy;
+	DECLARE_SCOPE_HIERARCHICAL_COUNTER_RIGUNIT();
+	const URigHierarchy* Hierarchy = ExecuteContext.Hierarchy;
 
-	if (Context.State == EControlRigState::Init)
+	if (!Hierarchy)
 	{
 		return;
 	}
 
-	if (Context.State == EControlRigState::Update)
-	{
-		if (!Hierarchy)
-		{
-			return;
-		}
-
-		Output = FMath::Exp(Value * Value / -Variance);
-	}
+	Output = FMath::Exp(Value * Value / -Variance);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 FRigUnit_DistanceBellCurve_Execute()
 {
-	DECLARE_SCOPE_HIERARCHICAL_COUNTER_RIGUNIT()
-		const URigHierarchy* Hierarchy = Context.Hierarchy;
+	DECLARE_SCOPE_HIERARCHICAL_COUNTER_RIGUNIT();
+	const URigHierarchy* Hierarchy = ExecuteContext.Hierarchy;
 
-	if (Context.State == EControlRigState::Init)
+	if (!Hierarchy)
 	{
 		return;
 	}
 
-	if (Context.State == EControlRigState::Update)
-	{
-		if (!Hierarchy)
-		{
-			return;
-		}
-
-		const FVector Delta = Reference - Location;
-		Output = FMath::Exp(Delta.SizeSquared() / -Variance);
-	}
+	const FVector Delta = Reference - Location;
+	Output = FMath::Exp(Delta.SizeSquared() / -Variance);
 }

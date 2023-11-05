@@ -18,7 +18,7 @@ struct ANGRYANIMATIONTOOLS_API FRigUnit_BendTowards : public FRigUnitMutable
 		FRigUnit_BendTowards() {}
 
 	RIGVM_METHOD()
-		virtual void Execute(const FRigUnitContext& Context) override;
+		virtual void Execute() override;
 
 public:
 	static FTransform BendTowards(const FRigElementKey& Key, const FRigElementKey& NextKey, const FVector& Target, URigHierarchy* Hierarchy, EBendScaleType type, bool bPropagateToChildren, float Intensity = 1.0f);

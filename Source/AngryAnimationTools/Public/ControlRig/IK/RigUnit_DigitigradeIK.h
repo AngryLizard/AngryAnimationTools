@@ -18,7 +18,7 @@ struct ANGRYANIMATIONTOOLS_API FRigUnit_DigitigradeIK : public FRigUnit_IK
 		FRigUnit_DigitigradeIK() {}
 
 	RIGVM_METHOD()
-		virtual void Execute(const FRigUnitContext& Context) override;
+		virtual void Execute() override;
 
 public:
 

@@ -18,7 +18,7 @@ struct ANGRYANIMATIONTOOLS_API FRigUnit_HingeIK : public FRigUnit_IK
 		FRigUnit_HingeIK() {}
 
 	RIGVM_METHOD()
-		virtual void Execute(const FRigUnitContext& Context) override;
+		virtual void Execute() override;
 
 public:
 	// Given two triangle sides a,b,s, return length and distance along s of the triangle altitude/apex

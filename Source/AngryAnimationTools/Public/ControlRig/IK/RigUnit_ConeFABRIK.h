@@ -18,7 +18,7 @@ struct ANGRYANIMATIONTOOLS_API FRigUnit_ConeFABRIK : public FRigUnit_IK
 		FRigUnit_ConeFABRIK() {}
 
 	RIGVM_METHOD()
-		virtual void Execute(const FRigUnitContext& Context) override;
+		virtual void Execute() override;
 
 public:
 	static FQuat SoftRotate(const FTransform& Local, const FTransform& Transform, const FTransform& Anchor, float MaxAngle);

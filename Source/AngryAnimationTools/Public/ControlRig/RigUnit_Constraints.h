@@ -18,7 +18,7 @@ struct ANGRYANIMATIONTOOLS_API FRigUnit_SoftLimitValue : public FRigUnit
 		FRigUnit_SoftLimitValue() {}
 
 	RIGVM_METHOD()
-		virtual void Execute(const FRigUnitContext& Context) override;
+		virtual void Execute() override;
 
 public:
 	static float SoftLimit(float Value, float Limit);
@@ -55,7 +55,7 @@ struct ANGRYANIMATIONTOOLS_API FRigUnit_LimitRotation : public FRigUnit
 		FRigUnit_LimitRotation() {}
 
 	RIGVM_METHOD()
-		virtual void Execute(const FRigUnitContext& Context) override;
+		virtual void Execute() override;
 
 public:
 	static FQuat LimitRotation(const FQuat& Quat, float Limit, bool Soft = false);
@@ -95,7 +95,7 @@ struct ANGRYANIMATIONTOOLS_API FRigUnit_LimitRotationAroundAxis : public FRigUni
 		FRigUnit_LimitRotationAroundAxis() {}
 
 	RIGVM_METHOD()
-		virtual void Execute(const FRigUnitContext& Context) override;
+		virtual void Execute() override;
 
 public:
 	static FQuat AxisLimitRotation(const FQuat& Quat, const FVector& Axis, float MinLimit, float MaxLimit, bool Soft = false);
@@ -146,7 +146,7 @@ struct ANGRYANIMATIONTOOLS_API FRigUnit_BellCurve : public FRigUnit
 		FRigUnit_BellCurve() {}
 
 	RIGVM_METHOD()
-		virtual void Execute(const FRigUnitContext& Context) override;
+		virtual void Execute() override;
 
 public:
 
@@ -182,7 +182,7 @@ struct ANGRYANIMATIONTOOLS_API FRigUnit_DistanceBellCurve : public FRigUnit
 		FRigUnit_DistanceBellCurve() {}
 
 	RIGVM_METHOD()
-		virtual void Execute(const FRigUnitContext& Context) override;
+		virtual void Execute() override;
 
 public:
 

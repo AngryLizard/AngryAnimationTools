@@ -47,7 +47,7 @@ struct ANGRYANIMATIONTOOLS_API FRigUnit_SpineIK : public FRigUnit_IK
 		FRigUnit_SpineIK() {}
 
 	RIGVM_METHOD()
-		virtual void Execute(const FRigUnitContext& Context) override;
+		virtual void Execute() override;
 
 public:
 

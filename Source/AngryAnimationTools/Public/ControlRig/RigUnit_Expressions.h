@@ -18,7 +18,7 @@ struct ANGRYANIMATIONTOOLS_API FRigUnit_EyeLookAt : public FRigUnitMutable
 		FRigUnit_EyeLookAt() {}
 
 	RIGVM_METHOD()
-		virtual void Execute(const FRigUnitContext& Context) override;
+		virtual void Execute() override;
 
 public:
 
@@ -98,7 +98,7 @@ struct ANGRYANIMATIONTOOLS_API FRigUnit_EyelidDisplacement : public FRigUnitMuta
 		FRigUnit_EyelidDisplacement() {}
 
 	RIGVM_METHOD()
-		virtual void Execute(const FRigUnitContext& Context) override;
+		virtual void Execute() override;
 
 public:
 

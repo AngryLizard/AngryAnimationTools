@@ -34,7 +34,7 @@ struct FRigUnit_PreviewAnimation_WorkData
 	}
 
 	UPROPERTY()
-		float Time = 0.0f;
+		double Time = 0.0f;
 
 	UPROPERTY()
 		bool bInitialized = false;
@@ -60,7 +60,7 @@ struct ANGRYANIMATIONTOOLS_API FRigUnit_PreviewAnimation : public FRigUnitMutabl
 		FRigUnit_PreviewAnimation() {}
 
 	RIGVM_METHOD()
-		virtual void Execute(const FRigUnitContext& Context) override;
+		virtual void Execute() override;
 
 public:
 

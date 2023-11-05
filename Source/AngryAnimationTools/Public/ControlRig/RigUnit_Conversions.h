@@ -20,7 +20,7 @@ struct ANGRYANIMATIONTOOLS_API FRigUnit_SetTransformWithOffset : public FRigUnit
 		FRigUnit_SetTransformWithOffset() {}
 
 	RIGVM_METHOD()
-		virtual void Execute(const FRigUnitContext& Context) override;
+		virtual void Execute() override;
 
 public:
 
@@ -70,7 +70,7 @@ struct ANGRYANIMATIONTOOLS_API FRigUnit_CloneTransforms : public FRigUnitMutable
 		FRigUnit_CloneTransforms() {}
 
 	RIGVM_METHOD()
-		virtual void Execute(const FRigUnitContext& Context) override;
+		virtual void Execute() override;
 
 public:
 	UPROPERTY(meta = (Input))
@@ -91,7 +91,7 @@ struct ANGRYANIMATIONTOOLS_API FRigUnit_Rebase : public FRigUnit
 		FRigUnit_Rebase() {}
 
 	RIGVM_METHOD()
-		virtual void Execute(const FRigUnitContext& Context) override;
+		virtual void Execute() override;
 
 public:
 
@@ -137,7 +137,7 @@ struct ANGRYANIMATIONTOOLS_API FRigUnit_AffineRebase : public FRigUnit
 		FRigUnit_AffineRebase() {}
 
 	RIGVM_METHOD()
-		virtual void Execute(const FRigUnitContext& Context) override;
+		virtual void Execute() override;
 
 public:
 	
@@ -183,7 +183,7 @@ struct ANGRYANIMATIONTOOLS_API FRigUnit_AxisAlignRotation : public FRigUnit
 		FRigUnit_AxisAlignRotation() {}
 
 	RIGVM_METHOD()
-		virtual void Execute(const FRigUnitContext& Context) override;
+		virtual void Execute() override;
 
 public:
 	static FQuat ComputeHeadingRotation(const FVector& SourceForward, const FVector& TargetForward, const FVector& SourceUp, const FVector& TargetUp);
@@ -230,7 +230,7 @@ struct ANGRYANIMATIONTOOLS_API FRigUnit_RotationBetween : public FRigUnit
 		FRigUnit_RotationBetween() {}
 
 	RIGVM_METHOD()
-		virtual void Execute(const FRigUnitContext& Context) override;
+		virtual void Execute() override;
 
 public:
 	/**
@@ -263,7 +263,7 @@ struct ANGRYANIMATIONTOOLS_API FRigUnit_ProjectOntoPlane : public FRigUnit
 		FRigUnit_ProjectOntoPlane() {}
 
 	RIGVM_METHOD()
-		virtual void Execute(const FRigUnitContext& Context) override;
+		virtual void Execute() override;
 
 public:
 
@@ -321,7 +321,7 @@ struct ANGRYANIMATIONTOOLS_API FRigUnit_WarpAlongDirection : public FRigUnit
 		FRigUnit_WarpAlongDirection() {}
 
 	RIGVM_METHOD()
-		virtual void Execute(const FRigUnitContext& Context) override;
+		virtual void Execute() override;
 
 public:
 
@@ -367,7 +367,7 @@ struct ANGRYANIMATIONTOOLS_API FRigUnit_ScaleToValue : public FRigUnit
 		FRigUnit_ScaleToValue() {}
 
 	RIGVM_METHOD()
-		virtual void Execute(const FRigUnitContext& Context) override;
+		virtual void Execute() override;
 
 public:
 

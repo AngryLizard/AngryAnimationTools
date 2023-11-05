@@ -7,8 +7,10 @@
 #include "ControlRig.h"
 #include "Units/RigUnitContext.h"
 
-void WeightedMean(const FRigUnitContext& Context, const FDebugSettings& DebugSettings, TArray<FTransform>& Transforms, const TArray<FTransform>& A, const TArray<FTransform>& B, float Bias)
+void WeightedMean(const FControlRigExecuteContext& ExecuteContext, const FDebugSettings& DebugSettings, TArray<FTransform>& Transforms, const TArray<FTransform>& A, const TArray<FTransform>& B, float Bias)
 {
+	FRigVMDrawInterface* DrawInterface = ExecuteContext.GetDrawInterface();
+
 	// Both ends always match
 	Transforms[0] = A[0];
 	Transforms.Last() = B.Last();
@@ -23,7 +25,7 @@ void WeightedMean(const FRigUnitContext& Context, const FDebugSettings& DebugSet
 
 		if (DebugSettings.bEnabled)
 		{
-			Context.DrawInterface->DrawPoint(FTransform::Identity, Transforms[Index].GetLocation(), DebugSettings.Scale * 5.0f, FLinearColor::Yellow);
+			DrawInterface->DrawPoint(FTransform::Identity, Transforms[Index].GetLocation(), DebugSettings.Scale * 5.0f, FLinearColor::Yellow);
 		}
 	}
 }
@@ -41,7 +43,7 @@ void Straighten(TArray<FTransform>& Transforms, const TArray<FTransform>& Rest)
 }
 
 void InitialiseBendTransforms(
-	const FRigUnitContext& Context,
+	const FControlRigExecuteContext& ExecuteContext,
 	const FDebugSettings& DebugSettings,
 	const FRigElementKeyCollection& Chain,
 	const FTransform& StartEE, const FVector& StartOffset, float StartRadius,
@@ -51,6 +53,8 @@ void InitialiseBendTransforms(
 	TArray<FTransform>& EndChain,
 	TArray<FTransform>& Transforms)
 {
+	FRigVMDrawInterface* DrawInterface = ExecuteContext.GetDrawInterface();
+	URigHierarchy* Hierarchy = ExecuteContext.Hierarchy;
 	const int32 ChainNum = Chain.Num();
 
 	// Populate transform lists
@@ -60,9 +64,9 @@ void InitialiseBendTransforms(
 	Transforms.Reserve(ChainNum);
 	for (int32 Index = 0; Index < ChainNum; Index++)
 	{
-		//Rest.Emplace(Context.Hierarchy->GetInitialLocalTransform(Chain[Index]));
-		Rest.Emplace(Context.Hierarchy->GetLocalTransform(Chain[Index]));
-		Transforms.Emplace(Context.Hierarchy->GetGlobalTransform(Chain[Index]));
+		//Rest.Emplace(ExecuteContext.Hierarchy->GetInitialLocalTransform(Chain[Index]));
+		Rest.Emplace(Hierarchy->GetLocalTransform(Chain[Index]));
+		Transforms.Emplace(Hierarchy->GetGlobalTransform(Chain[Index]));
 		StartChain.Emplace(StartEE);
 		EndChain.Emplace(EndEETarget);
 	}
@@ -83,14 +87,16 @@ void InitialiseBendTransforms(
 
 		if (DebugSettings.bEnabled)
 		{
-			Context.DrawInterface->DrawPoint(FTransform::Identity, StartChain[Index].GetLocation(), DebugSettings.Scale * 5.0f, FLinearColor::Red);
-			Context.DrawInterface->DrawPoint(FTransform::Identity, EndChain[ChainNum - Index - 1].GetLocation(), DebugSettings.Scale * 5.0f, FLinearColor::Blue);
+			DrawInterface->DrawPoint(FTransform::Identity, StartChain[Index].GetLocation(), DebugSettings.Scale * 5.0f, FLinearColor::Red);
+			DrawInterface->DrawPoint(FTransform::Identity, EndChain[ChainNum - Index - 1].GetLocation(), DebugSettings.Scale * 5.0f, FLinearColor::Blue);
 		}
 	}
 }
 
-void ChainForwardSolve(const FRigUnitContext& Context, const FDebugSettings& DebugSettings, const TArray<FTransform>& Rest, const TArray<FTransform>& Transforms, TArray<FTransform>& StartChain, float MaxAnchorRadians)
+void ChainForwardSolve(const FControlRigExecuteContext& ExecuteContext, const FDebugSettings& DebugSettings, const TArray<FTransform>& Rest, const TArray<FTransform>& Transforms, TArray<FTransform>& StartChain, float MaxAnchorRadians)
 {
+	FRigVMDrawInterface* DrawInterface = ExecuteContext.GetDrawInterface();
+
 	const int32 ChainNum = Rest.Num();
 	for (int32 Index = 1; Index < ChainNum; Index++)
 	{
@@ -103,13 +109,15 @@ void ChainForwardSolve(const FRigUnitContext& Context, const FDebugSettings& Deb
 
 		if (DebugSettings.bEnabled)
 		{
-			Context.DrawInterface->DrawPoint(FTransform::Identity, StartChain[Index].GetLocation(), DebugSettings.Scale * 7.5f, FLinearColor::White);
+			DrawInterface->DrawPoint(FTransform::Identity, StartChain[Index].GetLocation(), DebugSettings.Scale * 7.5f, FLinearColor::White);
 		}
 	}
 }
 
-void ChainBackwardSolve(const FRigUnitContext& Context, const FDebugSettings& DebugSettings, const TArray<FTransform>& Rest, const TArray<FTransform>& Transforms, TArray<FTransform>& EndChain, float MaxObjectiveRadians)
+void ChainBackwardSolve(const FControlRigExecuteContext& ExecuteContext, const FDebugSettings& DebugSettings, const TArray<FTransform>& Rest, const TArray<FTransform>& Transforms, TArray<FTransform>& EndChain, float MaxObjectiveRadians)
 {
+	FRigVMDrawInterface* DrawInterface = ExecuteContext.GetDrawInterface();
+
 	const int32 ChainNum = Rest.Num();
 	for (int32 Index = ChainNum - 1; Index >= 1; Index--)
 	{
@@ -123,7 +131,7 @@ void ChainBackwardSolve(const FRigUnitContext& Context, const FDebugSettings& De
 
 		if (DebugSettings.bEnabled)
 		{
-			Context.DrawInterface->DrawPoint(FTransform::Identity, EndChain[Index - 1].GetLocation(), DebugSettings.Scale * 7.5f, FLinearColor::Black);
+			DrawInterface->DrawPoint(FTransform::Identity, EndChain[Index - 1].GetLocation(), DebugSettings.Scale * 7.5f, FLinearColor::Black);
 		}
 	}
 }
@@ -132,64 +140,55 @@ FRigUnit_SpineIK_Execute()
 {
 	DECLARE_SCOPE_HIERARCHICAL_COUNTER_RIGUNIT();
 	URigHierarchy* Hierarchy = ExecuteContext.Hierarchy;
-
-	if (Context.State == EControlRigState::Init)
+	if (!Hierarchy)
 	{
 		return;
 	}
 
-	if (Context.State == EControlRigState::Update)
+	const int32 ChainNum = Chain.Num();
+	if (ChainNum < 2)
 	{
-		if (!Hierarchy)
+		UE_CONTROLRIG_RIGUNIT_REPORT_WARNING(TEXT("Chain has to have length at least 2."));
+	}
+	else
+	{
+		// Objective properties
+		const FTransform StartEE = ExecuteContext.Hierarchy->GetGlobalTransform(Chain.First());
+		const FTransform EndEETarget = GET_IK_OBJECTIVE_TRANSFORM();
+
+		TArray<FTransform> Rest, StartChain, EndChain, Transforms;
+		InitialiseBendTransforms(ExecuteContext, DebugSettings, Chain, 
+			StartEE, ObjectiveSettings.LimitBias, ObjectiveSettings.LimitRadius, 
+			EndEETarget, AnchorSettings.LimitBias, AnchorSettings.LimitRadius, 
+			Rest, StartChain, EndChain, Transforms);
+
+		// Collapse start and end chain into one
+		WeightedMean(ExecuteContext, DebugSettings, Transforms, StartChain, EndChain, 0.0f);
+
+		const float MaxAnchorRadians = FMath::DegreesToRadians(AnchorSettings.AngleLimit);
+		const float MaxObjectiveRadians = FMath::DegreesToRadians(ObjectiveSettings.AngleLimit);
+		for (int32 Iteration = 0; Iteration < Iterations; Iteration++)
 		{
-			return;
+			// Apply one FABRIK iteration to both directions
+			ChainForwardSolve(ExecuteContext, DebugSettings, Rest, Transforms, StartChain, MaxAnchorRadians);
+			ChainBackwardSolve(ExecuteContext, DebugSettings, Rest, Transforms, EndChain, MaxObjectiveRadians);
+
+			// Collapse both FABRIK iterations into one
+			WeightedMean(ExecuteContext, DebugSettings, Transforms, StartChain, EndChain, 1.0f);
 		}
 
-		const int32 ChainNum = Chain.Num();
-		if (ChainNum < 2)
+		// Make sure all bones are properly rotated
+		Straighten(Transforms, Rest);
+
+		Transforms[0] = StartEE;
+		Transforms.Last() = EndEETarget;
+
+		// Set bones to transforms
+		Hierarchy->SetGlobalTransform(Chain[0], Transforms[0], false, PropagateToChildren != EPropagation::Off);
+		for (int32 Index = 1; Index < ChainNum - 1; Index++)
 		{
-			UE_CONTROLRIG_RIGUNIT_REPORT_WARNING(TEXT("Chain has to have length at least 2."));
+			Hierarchy->SetGlobalTransform(Chain[Index], Transforms[Index], false, PropagateToChildren == EPropagation::All);
 		}
-		else
-		{
-			// Objective properties
-			const FTransform StartEE = Context.Hierarchy->GetGlobalTransform(Chain.First());
-			const FTransform EndEETarget = GET_IK_OBJECTIVE_TRANSFORM();
-
-			TArray<FTransform> Rest, StartChain, EndChain, Transforms;
-			InitialiseBendTransforms(Context, DebugSettings, Chain, 
-				StartEE, ObjectiveSettings.LimitBias, ObjectiveSettings.LimitRadius, 
-				EndEETarget, AnchorSettings.LimitBias, AnchorSettings.LimitRadius, 
-				Rest, StartChain, EndChain, Transforms);
-
-			// Collapse start and end chain into one
-			WeightedMean(Context, DebugSettings, Transforms, StartChain, EndChain, 0.0f);
-
-			const float MaxAnchorRadians = FMath::DegreesToRadians(AnchorSettings.AngleLimit);
-			const float MaxObjectiveRadians = FMath::DegreesToRadians(ObjectiveSettings.AngleLimit);
-			for (int32 Iteration = 0; Iteration < Iterations; Iteration++)
-			{
-				// Apply one FABRIK iteration to both directions
-				ChainForwardSolve(Context, DebugSettings, Rest, Transforms, StartChain, MaxAnchorRadians);
-				ChainBackwardSolve(Context, DebugSettings, Rest, Transforms, EndChain, MaxObjectiveRadians);
-
-				// Collapse both FABRIK iterations into one
-				WeightedMean(Context, DebugSettings, Transforms, StartChain, EndChain, 1.0f);
-			}
-
-			// Make sure all bones are properly rotated
-			Straighten(Transforms, Rest);
-
-			Transforms[0] = StartEE;
-			Transforms.Last() = EndEETarget;
-
-			// Set bones to transforms
-			Hierarchy->SetGlobalTransform(Chain[0], Transforms[0], false, PropagateToChildren != EPropagation::Off);
-			for (int32 Index = 1; Index < ChainNum - 1; Index++)
-			{
-				Hierarchy->SetGlobalTransform(Chain[Index], Transforms[Index], false, PropagateToChildren == EPropagation::All);
-			}
-			Hierarchy->SetGlobalTransform(Chain.Last(), Transforms.Last(), false, PropagateToChildren != EPropagation::Off);
-		}
+		Hierarchy->SetGlobalTransform(Chain.Last(), Transforms.Last(), false, PropagateToChildren != EPropagation::Off);
 	}
 }

@@ -18,7 +18,7 @@ struct ANGRYANIMATIONTOOLS_API FRigUnit_MeanDirection : public FRigUnit
 		FRigUnit_MeanDirection() {}
 
 	RIGVM_METHOD()
-		virtual void Execute(const FRigUnitContext& Context) override;
+		virtual void Execute() override;
 
 public:
 
@@ -56,7 +56,7 @@ struct ANGRYANIMATIONTOOLS_API FRigUnit_PowerDirection : public FRigUnit
 		FRigUnit_PowerDirection() {}
 
 	RIGVM_METHOD()
-		virtual void Execute(const FRigUnitContext& Context) override;
+		virtual void Execute() override;
 
 public:
 
@@ -91,7 +91,7 @@ struct ANGRYANIMATIONTOOLS_API FRigUnit_ChainAnalysis : public FRigUnit
 		FRigUnit_ChainAnalysis() {}
 
 	RIGVM_METHOD()
-		virtual void Execute(const FRigUnitContext& Context) override;
+		virtual void Execute() override;
 
 public:
 	static float ComputeInitialChainLength(const FRigElementKeyCollection& Chain, const URigHierarchy* Hierarchy);

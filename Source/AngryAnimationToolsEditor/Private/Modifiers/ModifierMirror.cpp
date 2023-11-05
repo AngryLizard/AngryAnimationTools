@@ -60,7 +60,7 @@ void FModifierMirror::Mirror()
 		}
 	}
 
-	Sequencer.Pin()->NotifyMovieSceneDataChanged(EMovieSceneDataChangeType::RefreshAllImmediately);
+	Sequencer.Pin()->NotifyMovieSceneDataChanged(EMovieSceneDataChangeType::TrackValueChanged);
 }
 
 void FModifierMirror::Loop()
@@ -121,7 +121,7 @@ void FModifierMirror::Loop()
 		DeletePair.Key->DeleteKeys(DeletePair.Value);
 	}
 
-	Sequencer.Pin()->NotifyMovieSceneDataChanged(EMovieSceneDataChangeType::RefreshAllImmediately);
+	Sequencer.Pin()->NotifyMovieSceneDataChanged(EMovieSceneDataChangeType::TrackValueChanged);
 }
 
 void FModifierMirror::TimeOffsetHalf()

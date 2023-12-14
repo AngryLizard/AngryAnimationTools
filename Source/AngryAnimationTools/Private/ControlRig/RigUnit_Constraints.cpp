@@ -123,7 +123,22 @@ FRigUnit_DistanceBellCurve_Execute()
 	{
 		return;
 	}
-
+	
 	const FVector Delta = Reference - Location;
 	Output = FMath::Exp(Delta.SizeSquared() / -Variance);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+FRigUnit_Atan2_Execute()
+{
+	DECLARE_SCOPE_HIERARCHICAL_COUNTER_RIGUNIT();
+	const URigHierarchy* Hierarchy = ExecuteContext.Hierarchy;
+
+	if (!Hierarchy)
+	{
+		return;
+	}
+
+	Output = FMath::Atan2(Y, X);
 }

@@ -211,3 +211,40 @@ public:
 		float Output = 0.0f;
 };
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Atan forward for 2D angle analysis
+ */
+USTRUCT(meta = (DisplayName = "Atan2", Category = "Constraints", Keywords = "Angry,Utility", PrototypeName = "Atan2", NodeColor = "1.0 0.44 0.0"))
+struct ANGRYANIMATIONTOOLS_API FRigUnit_Atan2 : public FRigUnit
+{
+	GENERATED_BODY()
+
+		FRigUnit_Atan2() {}
+
+	RIGVM_METHOD()
+		virtual void Execute() override;
+
+public:
+
+	/**
+	 * Y parameter
+	 */
+	UPROPERTY(meta = (Input))
+		float Y = 0.0f;
+
+	/**
+	 * X parameter
+	 */
+	UPROPERTY(meta = (Input))
+		float X = 0.0f;
+
+	/**
+	 * Output value
+	 */
+	UPROPERTY(meta = (Output))
+		float Output = 0.0f;
+};
+
+
